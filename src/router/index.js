@@ -24,6 +24,18 @@ export default new Router({
 			component: () => import("@/components/login.vue")
 		},
 		{
+			path: "/register",
+			component: () => import("@/components/register.vue")
+		},
+		{
+			path: "/forgetpswd",
+			component: () => import("@/components/forgetpswd.vue")
+		},
+		{
+			path: "/main",
+			component: () => import("@/components/main.vue")
+		},
+		{
 			path: "/home",
 			component: () => import("@/components/home.vue")
 		}
