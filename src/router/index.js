@@ -36,6 +36,10 @@ export default new Router({
 			component: () => import("@/components/main.vue")
 		},
 		{
+			path: "/confirm",
+			component: () => import("@/components/confirm.vue")
+		},
+		{
 			path: "/home",
 			component: () => import("@/components/home.vue")
 		}
