@@ -27,7 +27,7 @@
 					console.log('Connect Success')
 				}
 			})
-			if(this.$root.USER.name !== null){
+			if(this.$root.USER.name != null){
 				alert("已有用户登录，即将跳转至主页");
 				this.$router.push('main')
 			}

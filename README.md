@@ -1,4 +1,4 @@
-# scratch-auto-review
+# scratch-web
 
 ## Project setup
 ```
