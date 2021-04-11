@@ -37,7 +37,7 @@ export default new Router({
 		},
 		{
 			path: "/confirm",
-			component: () => import("@/components/confirm.vue")
+			component: () => import("@/components/auth/confirm.vue")
 		},
 		{
 			path: "/home",

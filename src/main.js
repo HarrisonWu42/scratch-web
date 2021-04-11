@@ -18,5 +18,15 @@ Vue.prototype.$axios = axios
 Vue.config.productionTip = false
 new Vue({
     router: router,
+	data:function(){
+		return {
+			USER:[{
+				name:null,
+				email:null,
+				id:null,
+				confirmed:false
+			}]
+		}
+	},
     render: h => h(App),
 }).$mount('#app')

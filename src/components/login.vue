@@ -21,11 +21,16 @@
 		name: 'App',
 		components: {},
 		created() {
-			Vue.axios.get('http://localhost:5000/users').then((response) => {
-				if (response.status === 200) {
-					// alert(response.data.name)
+			Vue.axios.get('http://localhost:5000/home/').then((response) => {
+				response=JSON.parse(response.request.responseText);
+				if (response.code === 200) {
+					console.log('Connect Success')
 				}
 			})
+			if(this.$root.USER.name !== null){
+				alert("已有用户登录，即将跳转至主页");
+				this.$router.push('main')
+			}
 		},
 		data() {
 			return {
@@ -60,9 +65,17 @@
 				}).then(successResponse => {
 					successResponse=JSON.parse(successResponse.request.responseText);
 					console.log(successResponse)
-					// if(successResponse.code === 200){
-					// 	this.$router.push('main')
-					// }
+					if(successResponse.code === 200){
+						this.$root.USER.name = successResponse.data.name
+						this.$root.USER.email = successResponse.data.email
+						this.$root.USER.id = successResponse.data.id
+						this.$root.USER.confirmed = successResponse.data.confirmed
+						console.log(this.$root.USER.name)
+						console.log(this.$root.USER.email)
+						console.log(this.$root.USER.id)
+						console.log(this.$root.USER.confirmed)
+						this.$router.push('main')
+					}
 				})
 			}
 		},
