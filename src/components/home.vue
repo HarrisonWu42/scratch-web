@@ -12,7 +12,7 @@
 		<el-row :gutter="20">
 			<el-col :span="10" :offset="7" class="t1">
 				<div class="text text1">{{project_num}}</div>
-				<div class="textt tt1">任教师</div>
+				<div class="textt tt1">个作品</div>
 			</el-col>
 		</el-row>
 		<el-row :gutter="20">

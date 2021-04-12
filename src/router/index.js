@@ -36,6 +36,10 @@ export default new Router({
 			component: () => import("@/components/main.vue")
 		},
 		{
+			path: "/person",
+			component: () => import("@/components/person.vue")
+		},
+		{
 			path: "/confirm",
 			component: () => import("@/components/auth/confirm.vue")
 		},
