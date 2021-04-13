@@ -83,19 +83,19 @@
 	}
 
 	.t1 {
-		margin-top: 8em;
+		margin-top: 5em;
 	}
 
 	.t2 {
-		margin-top: 15em;
+		margin-top: 5em;
 	}
 
 	.t3 {
-		margin-top: 8em;
+		margin-top: 3em;
 	}
 
 	.enterbt {
-		font-size: 3em;
+		font-size: 2em;
 		width: 6em;
 		height: 2em;
 		margin-top: 2em;
@@ -112,7 +112,8 @@
 	}
 
 	.home {
-		height: 78em;
+		height: 100vh;
+    overflow: hidden;
 		background-color: #42B983;
 	}
 
