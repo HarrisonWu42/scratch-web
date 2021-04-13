@@ -17,7 +17,7 @@
 				<el-aside width="300px" style="background-color: rgb(238, 241, 246);">
 
 					<div style="background-color: #FFFFFF;margin: 10px;">
-						<div style="height: 30px;background-color: blue;"></div>
+						<div style="height: 30px;background-color: aqua;"></div>
 						<a style="display: block;margin: 10px;font-size: 20px; margin-top: 0;">作品:{{project_num}}</a>
 						<a style="display: block;margin: 10px;font-size: 20px;">用户:{{user_num}}</a>
 						<a style="display: block;margin: 10px;font-size: 20px;">题目:{{task_num}}</a>
@@ -49,7 +49,7 @@
 					<div v-if="classt">
 						<el-button type="primary" @click="dialogFormVisible = true">创建班级</el-button>
 						<el-table :data="tableData2">
-							<el-table-column prop="name" label="班级名称" width="120" @click="gotoregister">
+							<el-table-column prop="name" label="班级名称" width="120">
 							</el-table-column>
 							<el-table-column prop="description" label="班级描述">
 							</el-table-column>
@@ -63,9 +63,23 @@
 									<el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">
 										删除
 									</el-button>
+									<el-button size="mini" type="danger" @click="handlelose(scope.$index, scope.row)">关闭
+									</el-button>
 								</template>
 							</el-table-column>
 						</el-table>
+						<div class="page-bar">
+							<ul>
+								<li v-if="cur>1"><a v-on:click="cur--,pageClick()">上一页</a></li>
+								<li v-if="cur==1"><a class="banclick">上一页</a></li>
+								<li v-for="index in indexs" v-bind:class="{ 'active': cur == index}">
+									<a v-on:click="btnClick(index)">{{ index }}</a>
+								</li>
+								<li v-if="cur!=all"><a v-on:click="cur++,pageClick()">下一页</a></li>
+								<li v-if="cur == all"><a class="banclick">下一页</a></li>
+								<li><a>共<i>{{all}}</i>页</a></li>
+							</ul>
+						</div>
 					</div>
 				</el-main>
 			</el-container>
@@ -112,9 +126,9 @@
 			Vue.axios.get('http://localhost:5000/home/').then((response) => {
 				response = JSON.parse(response.request.responseText);
 				if (response.code === 200) {
-					this.project_num = response.data.project_num[0],
-						this.task_num = response.data.task_num[0],
-						this.user_num = response.data.user_num[0]
+					this.project_num = response.data.project_num,
+						this.task_num = response.data.task_num,
+						this.user_num = response.data.user_num
 				}
 			})
 			this.taskt = true;
@@ -122,19 +136,16 @@
 			this.usert = false;
 			if (this.$root.USER.name != null) {
 				this.usert = true;
-				Vue.axios.get('http://localhost:5000/group/teacher/' + this.$root.USER.id + '/1/5').then((response) => {
-					response = JSON.parse(response.request.responseText);
-					if (response.code === 200) {
-						console.log(response);
-						this.tableData2 = response.data.groups;
-						console.log(this.tableData2[1].name)
-					}
-				})
+				this.getgroup();
 			}
 
 		},
 		data() {
 			return {
+				all: 10, //总页数
+				cur: 1, //当前页码
+				totalPage: 0, //当前条数
+
 				project_num: 111,
 				task_num: 2222,
 				user_num: 33333,
@@ -153,28 +164,82 @@
 				},
 				formLabelWidth: '120px',
 
-				tableData: [{
-					date: '2016-05-02',
-					name: '王小虎',
-					address: '上海市普陀区金沙江路 1518 弄'
-				}, {
-					date: '2016-05-04',
-					name: '王小虎',
-					address: '上海市普陀区金沙江路 1517 弄'
-				}, {
-					date: '2016-05-01',
-					name: '王小虎',
-					address: '上海市普陀区金沙江路 1519 弄'
-				}, {
-					date: '2016-05-03',
-					name: '王小虎',
-					address: '上海市普陀区金沙江路 1516 弄'
-				}],
+				tableData: [],
 				tableData2: [],
 				search: ''
 			}
 		},
 		methods: {
+			//请求数据
+			dataListFn: function(index) {
+				this.$axios.get("http://127.0.0.1:8090/demand/selectListByPage", {
+					params: {
+						page: index,
+						limit: '10',
+						state: 0
+					}
+				}).then((res) => {
+					if (res.data.message == "success") {
+						this.dataList = [];
+						for (let i = 0; i < res.data.data.length; i++) {
+							this.dataList.push(res.data.data[i])
+						}
+						this.all = res.data.totalPage; //总页数
+						this.cur = res.data.pageNum;
+						this.totalPage = res.data.totalPage;
+					}
+
+				});
+			},
+			//分页
+			btnClick: function(data) { //页码点击事件
+				if (data != this.cur) {
+					this.cur = data
+				}
+				//根据点击页数请求数据
+				this.dataListFn(this.cur.toString());
+			},
+			pageClick: function() {
+				//根据点击页数请求数据
+				this.dataListFn(this.cur.toString());
+			},
+			computed: {
+				//分页
+				indexs: function() {
+					var left = 1;
+					var right = this.all;
+					var ar = [];
+					if (this.all >= 5) {
+						if (this.cur > 3 && this.cur < this.all - 2) {
+							left = this.cur - 2
+							right = this.cur + 2
+						} else {
+							if (this.cur <= 3) {
+								left = 1
+								right = 5
+							} else {
+								right = this.all
+								left = this.all - 4
+							}
+						}
+					}
+					while (left <= right) {
+						ar.push(left)
+						left++
+					}
+					return ar
+				},
+			},
+			getgroup() { //在需要重新获取班级信息的地方调用
+				Vue.axios.get('http://localhost:5000/group/teacher/' + this.$root.USER.id + '/1/5').then((response) => {
+					response = JSON.parse(response.request.responseText);
+					if (response.code === 200) {
+						console.log(response);
+						this.tableData2 = response.data.groups;
+						console.log(this.tableData2[1].name)
+					}
+				})
+			},
 			handleEdit(index, row) {
 				this.form.name = row.name;
 				this.form.description = row.description;
@@ -183,6 +248,61 @@
 				console.log(index, row);
 			},
 			handleDelete(index, row) {
+				this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					type: 'warning'
+				}).then(() => {
+					this.$axios({
+						method: 'post',
+						url: 'http://localhost:5000/group/delete',
+						data: {
+							id: row.id,
+						}
+					}).then(successResponse => {
+						successResponse = JSON.parse(successResponse.request.responseText);
+						console.log(successResponse);
+						this.getgroup();
+					})
+					this.$message({
+						type: 'success',
+						message: '删除成功!'
+					});
+				}).catch(() => {
+					this.$message({
+						type: 'info',
+						message: '已取消'
+					});
+				});
+				console.log(index, row);
+			},
+			handlelose(index, row) {
+				this.$confirm('是否确认关闭该班级?', '提示', {
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					type: 'warning'
+				}).then(() => {
+					this.$axios({
+						method: 'post',
+						url: 'http://localhost:5000/group/close',
+						data: {
+							id: row.id,
+						}
+					}).then(successResponse => {
+						successResponse = JSON.parse(successResponse.request.responseText);
+						console.log(successResponse);
+						this.getgroup();
+					})
+					this.$message({
+						type: 'success',
+						message: '关闭成功!'
+					});
+				}).catch(() => {
+					this.$message({
+						type: 'info',
+						message: '已取消'
+					});
+				});
 				console.log(index, row);
 			},
 			person() {
@@ -203,15 +323,7 @@
 					this.form.description = '';
 					successResponse = JSON.parse(successResponse.request.responseText);
 					console.log(successResponse)
-					Vue.axios.get('http://localhost:5000/group/teacher/' + this.$root.USER.id + '/1/5').then((
-						response) => {
-						response = JSON.parse(response.request.responseText);
-						if (response.code === 200) {
-							console.log(response);
-							this.tableData2 = response.data.groups;
-							console.log(this.tableData2[1].name)
-						}
-					})
+					this.getgroup();
 				})
 
 			},
@@ -229,6 +341,7 @@
 					this.form.name = '';
 					this.form.description = '';
 					successResponse = JSON.parse(successResponse.request.responseText);
+					this.getgroup();
 					console.log(successResponse)
 				})
 			},
@@ -268,10 +381,67 @@
 				this.$router.push('register')
 			}
 		}
-	};
+
+	}
 </script>
 
 <style>
+	/*分页*/
+	.page-bar {
+		margin: 40px auto;
+		margin-top: 150px;
+
+	}
+
+	ul,
+	li {
+		margin: 0px;
+		padding: 0px;
+	}
+
+	li {
+		list-style: none
+	}
+
+	.page-bar li:first-child>a {
+		margin-left: 0px
+	}
+
+	.page-bar a {
+		border: 1px solid #ddd;
+		text-decoration: none;
+		position: relative;
+		float: left;
+		padding: 6px 12px;
+		margin-left: -1px;
+		line-height: 1.42857143;
+		color: #5D6062;
+		cursor: pointer;
+		margin-right: 20px;
+	}
+
+	.page-bar a:hover {
+		background-color: #eee;
+	}
+
+	.page-bar a.banclick {
+		cursor: not-allowed;
+	}
+
+	.page-bar .active a {
+		color: #fff;
+		cursor: default;
+		background-color: #E96463;
+		border-color: #E96463;
+	}
+
+	.page-bar i {
+		font-style: normal;
+		color: #d44950;
+		margin: 0px 4px;
+		font-size: 12px;
+	}
+
 	.el-header {
 		background-color: #B3C0D1;
 		color: #333;

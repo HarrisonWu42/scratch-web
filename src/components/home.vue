@@ -50,9 +50,9 @@
 			Vue.axios.get('http://localhost:5000/home/').then((response) => {
 				response=JSON.parse(response.request.responseText);
 				if (response.code === 200) {
-					this.project_num = response.data.project_num[0],
-						this.task_num = response.data.task_num[0],
-						this.user_num = response.data.user_num[0]
+					this.project_num = response.data.project_num,
+						this.task_num = response.data.task_num,
+						this.user_num = response.data.user_num
 				}
 			})
 		},
