@@ -6,7 +6,7 @@
 				<el-input class="item" type="email" v-model="form.email"></el-input>
 			</el-form-item>
 			<el-form-item>
-				<el-button type="primary" @click="onSubmit">发送验证邮件</el-button>
+				<el-button type="primary" @click="sentemail">发送验证邮件</el-button>
 			</el-form-item>
 		</el-form>
 	</div>
@@ -26,11 +26,6 @@
 		},
 		data() {
 			return {
-				value: 3.7,
-				fileList: [{
-					name: 'food.jpeg',
-					url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
-				}],
 				form: {},
 				rules: {
 					email: [{
@@ -38,12 +33,6 @@
 							message: "请输入邮箱",
 							trigger: "blur"
 						},
-						{
-							min: 3,
-							max: 5,
-							message: "长度在 3 到 5 个字符",
-							trigger: "blur"
-						}
 					],
 				}
 			}
@@ -58,12 +47,18 @@
 			//     }
 			//   });
 			// }
-			onSubmit() {
+			sentemail() {
 				this.$axios({
-					method: 'get',
-					url: 'http://localhost:5000/demo'
+					method: 'post',
+					url: 'http://localhost:5000/auth/forget-password',
+					data:{
+						email:this.form.email
+					}
 				}).then(successResponse => {
 					console.log(successResponse)
+					if(successResponse.data.code === 302){
+						this.$router.push('login')
+					}
 				})
 			}
 		},

@@ -12,7 +12,7 @@
 		<el-row :gutter="20">
 			<el-col :span="10" :offset="7" class="t1">
 				<div class="text text1">{{project_num}}</div>
-				<div class="textt tt1">任教师</div>
+				<div class="textt tt1">个作品</div>
 			</el-col>
 		</el-row>
 		<el-row :gutter="20">
@@ -50,9 +50,9 @@
 			Vue.axios.get('http://localhost:5000/home/').then((response) => {
 				response=JSON.parse(response.request.responseText);
 				if (response.code === 200) {
-					this.project_num = response.data.project_num[0],
-						this.task_num = response.data.task_num[0],
-						this.user_num = response.data.user_num[0]
+					this.project_num = response.data.project_num,
+						this.task_num = response.data.task_num,
+						this.user_num = response.data.user_num
 				}
 			})
 		},
@@ -83,19 +83,19 @@
 	}
 
 	.t1 {
-		margin-top: 8em;
+		margin-top: 5em;
 	}
 
 	.t2 {
-		margin-top: 15em;
+		margin-top: 5em;
 	}
 
 	.t3 {
-		margin-top: 8em;
+		margin-top: 3em;
 	}
 
 	.enterbt {
-		font-size: 3em;
+		font-size: 2em;
 		width: 6em;
 		height: 2em;
 		margin-top: 2em;
@@ -112,7 +112,8 @@
 	}
 
 	.home {
-		height: 78em;
+		height: 100vh;
+    overflow: hidden;
 		background-color: #42B983;
 	}
 

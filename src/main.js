@@ -10,23 +10,25 @@ import 'video.js/dist/video-js.css'
 
 Vue.use(VueAxios, axios)
 Vue.use(ElementUI)
-Vue.use(VueVideoPlayer, /* {
+Vue.use(VueVideoPlayer,
+	/* {
   options: global default options,
   events: global videojs events
-} */)
+} */
+)
 Vue.prototype.$axios = axios
 Vue.config.productionTip = false
 new Vue({
-    router: router,
-	data:function(){
+	router: router,
+	data: function() {
 		return {
-			USER:[{
-				name:null,
-				email:null,
-				id:null,
-				confirmed:false
+			USER: [{
+				name: null,
+				email: null,
+				id: null,
+				confirmed: false
 			}]
 		}
 	},
-    render: h => h(App),
+	render: h => h(App),
 }).$mount('#app')
