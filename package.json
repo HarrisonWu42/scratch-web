@@ -1,5 +1,5 @@
 {
-  "name": "scratch-auto-review",
+  "name": "scratch-web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -52,5 +52,5 @@
     "last 2 versions",
     "not dead"
   ],
-  "vetur.validation.template": false,
+  "vetur.validation.template": false
 }
