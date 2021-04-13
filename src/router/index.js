@@ -44,6 +44,14 @@ export default new Router({
 			component: () => import("@/components/auth/confirm.vue")
 		},
 		{
+			path: "/editgroup",
+			component: () => import("@/components/editgroup.vue")
+		},
+		{
+			path: "/edittask",
+			component: () => import("@/components/edittask.vue")
+		},
+		{
 			path: "/home",
 			component: () => import("@/components/home.vue")
 		}

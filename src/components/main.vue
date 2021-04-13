@@ -36,29 +36,33 @@
 				<el-main>
 					<div v-if="taskt">
 						<el-table :data="tableData">
-							<el-table-column prop="id" label="ID" width="140">
+							<el-table-column prop="name" label="题目集名称" width="215">
 							</el-table-column>
-							<el-table-column prop="date" label="日期" width="140">
+							<el-table-column prop="description" label="描述" width="215">
 							</el-table-column>
-							<el-table-column prop="name" label="姓名" width="120">
+							<el-table-column prop="type" label="状态" width="215">
 							</el-table-column>
-							<el-table-column prop="address" label="地址">
+							<el-table-column label="操作" width="215">
+								<template slot-scope="scope">
+									<el-button size="mini" @click="handletask(scope.$index, scope.row)">进入</el-button>
+								</template>
 							</el-table-column>
 						</el-table>
 					</div>
 					<div v-if="classt">
 						<el-button type="primary" @click="dialogFormVisible = true">创建班级</el-button>
 						<el-table :data="tableData2">
-							<el-table-column prop="name" label="班级名称" width="120">
+							<el-table-column prop="name" label="班级名称" width="215">
 							</el-table-column>
-							<el-table-column prop="description" label="班级描述">
+							<el-table-column prop="description" width="215" label="班级描述">
 							</el-table-column>
-							<el-table-column prop="invite_code" label="邀请码">
+							<el-table-column prop="invite_code" width="215" label="邀请码">
 							</el-table-column>
-							<el-table-column prop="type" label="状态">
+							<el-table-column prop="type" width="215" label="状态">
 							</el-table-column>
 							<el-table-column label="操作">
 								<template slot-scope="scope">
+									<el-button size="mini" type="primary" @click="handlegroup(scope.$index, scope.row)">管理</el-button>
 									<el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
 									<el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">
 										删除
@@ -68,18 +72,6 @@
 								</template>
 							</el-table-column>
 						</el-table>
-						<div class="page-bar">
-							<ul>
-								<li v-if="cur>1"><a v-on:click="cur--,pageClick()">上一页</a></li>
-								<li v-if="cur==1"><a class="banclick">上一页</a></li>
-								<li v-for="index in indexs" v-bind:class="{ 'active': cur == index}">
-									<a v-on:click="btnClick(index)">{{ index }}</a>
-								</li>
-								<li v-if="cur!=all"><a v-on:click="cur++,pageClick()">下一页</a></li>
-								<li v-if="cur == all"><a class="banclick">下一页</a></li>
-								<li><a>共<i>{{all}}</i>页</a></li>
-							</ul>
-						</div>
 					</div>
 				</el-main>
 			</el-container>
@@ -100,6 +92,22 @@
 				</div>
 			</el-dialog>
 			<el-dialog title="修改班级信息" :visible.sync="dialogFormVisiblec">
+				<el-form :model="form">
+					<el-form-item :rules="[{required:true,message:'班级名不能为空'}]" label="班级名称"
+						:label-width="formLabelWidth">
+						<el-input v-model="form.name" autocomplete="off"></el-input>
+					</el-form-item>
+					<el-form-item :rules="[{required:true,message:'班级描述不能为空'}]" label="班级描述"
+						:label-width="formLabelWidth">
+						<el-input v-model="form.description" autocomplete="off"></el-input>
+					</el-form-item>
+				</el-form>
+				<div slot="footer" class="dialog-footer">
+					<el-button @click="dialogFormVisiblec = false">取 消</el-button>
+					<el-button type="primary" @click="editgroup">确 定</el-button>
+				</div>
+			</el-dialog>
+			<el-dialog title="管理班级" :visible.sync="dialogeditclass">
 				<el-form :model="form">
 					<el-form-item :rules="[{required:true,message:'班级名不能为空'}]" label="班级名称"
 						:label-width="formLabelWidth">
@@ -136,16 +144,13 @@
 			this.usert = false;
 			if (this.$root.USER.name != null) {
 				this.usert = true;
-				this.getgroup();
+				this.getgroups();
+				this.gettasks();
 			}
 
 		},
 		data() {
 			return {
-				all: 10, //总页数
-				cur: 1, //当前页码
-				totalPage: 0, //当前条数
-
 				project_num: 111,
 				task_num: 2222,
 				user_num: 33333,
@@ -156,6 +161,7 @@
 
 				dialogFormVisible: false,
 				dialogFormVisiblec: false,
+				dialogeditclass: false,
 
 				groupid: null,
 				form: {
@@ -170,67 +176,17 @@
 			}
 		},
 		methods: {
-			//请求数据
-			dataListFn: function(index) {
-				this.$axios.get("http://127.0.0.1:8090/demand/selectListByPage", {
-					params: {
-						page: index,
-						limit: '10',
-						state: 0
+			gettasks(){
+				Vue.axios.get('http://localhost:5000/task/tasksets/' + this.$root.USER.id + '/1/5').then((response) => {
+					response = JSON.parse(response.request.responseText);
+					if (response.code === 200) {
+						console.log(response);
+						this.tableData = response.data.groups;
+						console.log(this.tableData[1].name)
 					}
-				}).then((res) => {
-					if (res.data.message == "success") {
-						this.dataList = [];
-						for (let i = 0; i < res.data.data.length; i++) {
-							this.dataList.push(res.data.data[i])
-						}
-						this.all = res.data.totalPage; //总页数
-						this.cur = res.data.pageNum;
-						this.totalPage = res.data.totalPage;
-					}
-
-				});
+				})
 			},
-			//分页
-			btnClick: function(data) { //页码点击事件
-				if (data != this.cur) {
-					this.cur = data
-				}
-				//根据点击页数请求数据
-				this.dataListFn(this.cur.toString());
-			},
-			pageClick: function() {
-				//根据点击页数请求数据
-				this.dataListFn(this.cur.toString());
-			},
-			computed: {
-				//分页
-				indexs: function() {
-					var left = 1;
-					var right = this.all;
-					var ar = [];
-					if (this.all >= 5) {
-						if (this.cur > 3 && this.cur < this.all - 2) {
-							left = this.cur - 2
-							right = this.cur + 2
-						} else {
-							if (this.cur <= 3) {
-								left = 1
-								right = 5
-							} else {
-								right = this.all
-								left = this.all - 4
-							}
-						}
-					}
-					while (left <= right) {
-						ar.push(left)
-						left++
-					}
-					return ar
-				},
-			},
-			getgroup() { //在需要重新获取班级信息的地方调用
+			getgroups() { //在需要重新获取班级信息的地方调用
 				Vue.axios.get('http://localhost:5000/group/teacher/' + this.$root.USER.id + '/1/5').then((response) => {
 					response = JSON.parse(response.request.responseText);
 					if (response.code === 200) {
@@ -240,11 +196,22 @@
 					}
 				})
 			},
+			handletask(index, row) {
+				this.$root.usedtask.taskid = row.id;
+				console.log(this.$root.usedtask.taskid);
+				this.$router.push('edittask');
+			},
+			handlegroup(index, row) {
+				this.$root.usedgroup.groupid = row.id;
+				this.$root.usedgroup.invite_code = row.invite_code;
+				console.log(this.$root.usedgroup.groupid);
+				this.$router.push('editgroup');
+			},
 			handleEdit(index, row) {
 				this.form.name = row.name;
 				this.form.description = row.description;
 				this.groupid = row.id;
-				this.dialogFormVisiblec = true;
+				this.dialogFormVisiblec = true;//弹框
 				console.log(index, row);
 			},
 			handleDelete(index, row) {
@@ -262,7 +229,7 @@
 					}).then(successResponse => {
 						successResponse = JSON.parse(successResponse.request.responseText);
 						console.log(successResponse);
-						this.getgroup();
+						this.getgroups();
 					})
 					this.$message({
 						type: 'success',
@@ -291,7 +258,7 @@
 					}).then(successResponse => {
 						successResponse = JSON.parse(successResponse.request.responseText);
 						console.log(successResponse);
-						this.getgroup();
+						this.getgroups();
 					})
 					this.$message({
 						type: 'success',
@@ -323,7 +290,7 @@
 					this.form.description = '';
 					successResponse = JSON.parse(successResponse.request.responseText);
 					console.log(successResponse)
-					this.getgroup();
+					this.getgroups();
 				})
 
 			},
@@ -341,7 +308,7 @@
 					this.form.name = '';
 					this.form.description = '';
 					successResponse = JSON.parse(successResponse.request.responseText);
-					this.getgroup();
+					this.getgroups();
 					console.log(successResponse)
 				})
 			},
@@ -380,7 +347,7 @@
 			gotoregister() {
 				this.$router.push('register')
 			}
-		}
+		},
 
 	}
 </script>

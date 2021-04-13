@@ -59,7 +59,7 @@
 					</el-col>
 				</el-row>
 				<el-row :gutter="20">
-					<a href="http://localhost:5000/group/exp_excel">66666</a>
+					<!-- <a href="http://localhost:5000/group/output_excel/<group_id>">66666</a> -->
 					<el-col :span="20">
 						<el-button type="primary" @click="gotomain">返回主页</el-button>
 					</el-col>

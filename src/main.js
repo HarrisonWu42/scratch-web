@@ -27,7 +27,14 @@ new Vue({
 				email: null,
 				id: null,
 				confirmed: false
-			}]
+			}],
+			usedgroup:[{
+				groupid:null,
+				invite_code:null,
+			}],
+			usedtask:[{
+				taskid:null,
+			}],
 		}
 	},
 	render: h => h(App),
