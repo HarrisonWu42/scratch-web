@@ -8,13 +8,6 @@ Router.prototype.push = function push(to) {
 	return VueRouterPush.call(this, to).catch(err => err)
 }
 export default new Router({
-	// mode: 'history',
-	// routes: [
-	//     {
-	//         path: '/',
-	//         redirect: '/home',
-	//     },
-	// ]
 	routes: [{
 			path: "/",
 			redirect: "/home"
@@ -54,6 +47,18 @@ export default new Router({
 		{
 			path: "/home",
 			component: () => import("@/components/home.vue")
-		}
+		},
+		{
+			path: "/taskset/:tasksetid",
+			component: () => import("@/components/TaskSet.vue")
+		},
+		{
+			path: "/taskset/task/:taskid",
+			component: () => import("@/components/TaskItem.vue")
+		},
+		{
+			path: "/auth/confirm/:usercode",
+			redirect: "/home"
+		},
 	]
 })

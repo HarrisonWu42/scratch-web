@@ -1,421 +1,407 @@
 <template>
-	<div>
-		<el-container style="border: 1px solid #eee;">
-			<el-header style="text-align: right; font-size: 12px">
-
-				<div v-if="usert" style="display: inline;">
-					<span style="margin-right: 20px;font-size: 18px;">{{this.$root.USER.name}}</span>
-					<el-button type="primary" @click="person">个人中心</el-button>
-					<el-button type="primary" @click="quit">注销</el-button>
-				</div>
-				<div v-else style="display: inline;">
-					<el-button type="primary" @click="gotologin">登录</el-button>
-					<el-button type="primary" @click="gotoregister">注册</el-button>
-				</div>
-			</el-header>
-			<el-container>
-				<el-aside width="300px" style="background-color: rgb(238, 241, 246);">
-
-					<div style="background-color: #FFFFFF;margin: 10px;">
-						<div style="height: 30px;background-color: aqua;"></div>
-						<a style="display: block;margin: 10px;font-size: 20px; margin-top: 0;">作品:{{project_num}}</a>
-						<a style="display: block;margin: 10px;font-size: 20px;">用户:{{user_num}}</a>
-						<a style="display: block;margin: 10px;font-size: 20px;">题目:{{task_num}}</a>
-					</div>
-					<el-menu style="margin: 10px;">
-						<el-menu-item index="1" @click="task">
-							<i class="el-icon-menu"></i>
-							<span slot="title">题目集</span>
-						</el-menu-item>
-						<el-menu-item index="2" @click="sclass">
-							<i class="el-icon-menu"></i>
-							<span slot="title">班级管理</span>
-						</el-menu-item>
-					</el-menu>
-				</el-aside>
-				<el-main>
-					<div v-if="taskt">
-						<el-table :data="tableData">
-							<el-table-column prop="name" label="题目集名称" width="215">
-							</el-table-column>
-							<el-table-column prop="description" label="描述" width="215">
-							</el-table-column>
-							<el-table-column prop="type" label="状态" width="215">
-							</el-table-column>
-							<el-table-column label="操作" width="215">
-								<template slot-scope="scope">
-									<el-button size="mini" @click="handletask(scope.$index, scope.row)">进入</el-button>
-								</template>
-							</el-table-column>
-						</el-table>
-					</div>
-					<div v-if="classt">
-						<el-button type="primary" @click="dialogFormVisible = true">创建班级</el-button>
-						<el-table :data="tableData2">
-							<el-table-column prop="name" label="班级名称" width="215">
-							</el-table-column>
-							<el-table-column prop="description" width="215" label="班级描述">
-							</el-table-column>
-							<el-table-column prop="invite_code" width="215" label="邀请码">
-							</el-table-column>
-							<el-table-column prop="type" width="215" label="状态">
-							</el-table-column>
-							<el-table-column label="操作">
-								<template slot-scope="scope">
-									<el-button size="mini" type="primary" @click="handlegroup(scope.$index, scope.row)">管理</el-button>
-									<el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-									<el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">
-										删除
-									</el-button>
-									<el-button size="mini" type="danger" @click="handlelose(scope.$index, scope.row)">关闭
-									</el-button>
-								</template>
-							</el-table-column>
-						</el-table>
-					</div>
-				</el-main>
-			</el-container>
-			<el-dialog title="创建班级" :visible.sync="dialogFormVisible">
-				<el-form :model="form">
-					<el-form-item :rules="[{required:true,message:'班级名不能为空'}]" label="班级名称"
-						:label-width="formLabelWidth">
-						<el-input v-model="form.name" autocomplete="off"></el-input>
-					</el-form-item>
-					<el-form-item :rules="[{required:true,message:'班级描述不能为空'}]" label="班级描述"
-						:label-width="formLabelWidth">
-						<el-input v-model="form.description" autocomplete="off"></el-input>
-					</el-form-item>
-				</el-form>
-				<div slot="footer" class="dialog-footer">
-					<el-button @click="dialogFormVisible = false">取 消</el-button>
-					<el-button type="primary" @click="creategroup">确 定</el-button>
-				</div>
-			</el-dialog>
-			<el-dialog title="修改班级信息" :visible.sync="dialogFormVisiblec">
-				<el-form :model="form">
-					<el-form-item :rules="[{required:true,message:'班级名不能为空'}]" label="班级名称"
-						:label-width="formLabelWidth">
-						<el-input v-model="form.name" autocomplete="off"></el-input>
-					</el-form-item>
-					<el-form-item :rules="[{required:true,message:'班级描述不能为空'}]" label="班级描述"
-						:label-width="formLabelWidth">
-						<el-input v-model="form.description" autocomplete="off"></el-input>
-					</el-form-item>
-				</el-form>
-				<div slot="footer" class="dialog-footer">
-					<el-button @click="dialogFormVisiblec = false">取 消</el-button>
-					<el-button type="primary" @click="editgroup">确 定</el-button>
-				</div>
-			</el-dialog>
-			<el-dialog title="管理班级" :visible.sync="dialogeditclass">
-				<el-form :model="form">
-					<el-form-item :rules="[{required:true,message:'班级名不能为空'}]" label="班级名称"
-						:label-width="formLabelWidth">
-						<el-input v-model="form.name" autocomplete="off"></el-input>
-					</el-form-item>
-					<el-form-item :rules="[{required:true,message:'班级描述不能为空'}]" label="班级描述"
-						:label-width="formLabelWidth">
-						<el-input v-model="form.description" autocomplete="off"></el-input>
-					</el-form-item>
-				</el-form>
-				<div slot="footer" class="dialog-footer">
-					<el-button @click="dialogFormVisiblec = false">取 消</el-button>
-					<el-button type="primary" @click="editgroup">确 定</el-button>
-				</div>
-			</el-dialog>
-		</el-container>
-	</div>
+  <el-container>
+    <el-header class='header'>
+      <div v-if="usert" style="display: inline;">
+        <span style="margin-right: 20px;font-size: 18px;">{{ this.$root.USER.name }}</span>
+        <el-button type="primary" @click="person">个人中心</el-button>
+        <el-button type="primary" @click="quit">注销</el-button>
+      </div>
+      <div v-else style="display: inline;">
+        <el-button type="primary" @click="gotologin">登录</el-button>
+        <el-button type="primary" @click="gotoregister">注册</el-button>
+      </div>
+    </el-header>
+    <el-container>
+      <el-aside width="300px">
+        <div>
+          <div style="height: 30px;"></div>
+          <a style="display: block;margin: 10px;font-size: 20px; margin-top: 0;">作品:{{ project_num }}</a>
+          <a style="display: block;margin: 10px;font-size: 20px;">用户:{{ user_num }}</a>
+          <a style="display: block;margin: 10px;font-size: 20px;">题目:{{ task_num }}</a>
+        </div>
+        <el-menu style="margin: 10px;">
+          <el-menu-item index="1" @click="task">
+            <i class="el-icon-menu"></i>
+            <span slot="title">题目集</span>
+          </el-menu-item>
+          <el-menu-item index="2" @click="sclass">
+            <i class="el-icon-menu"></i>
+            <span slot="title">班级管理</span>
+          </el-menu-item>
+        </el-menu>
+      </el-aside>
+      <el-main>
+        <div v-if="taskt">
+          <el-table :data="tableData" @row-dblclick='handleTaskSetClick'>
+            <el-table-column prop="id" label="ID" width="140"/>
+            <el-table-column prop="name" label="姓名" width="120"/>
+          </el-table>
+        </div>
+        <div v-if="classt">
+          <el-button type="primary" @click="dialogFormVisible = true">创建班级</el-button>
+          <el-table :data="tableData2">
+            <el-table-column prop="name" label="班级名称" width="120">
+            </el-table-column>
+            <el-table-column prop="description" label="班级描述">
+            </el-table-column>
+            <el-table-column prop="invite_code" label="邀请码">
+            </el-table-column>
+            <el-table-column prop="type" label="状态">
+            </el-table-column>
+            <el-table-column label="操作">
+              <template slot-scope="scope">
+                <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">
+                  删除
+                </el-button>
+                <el-button size="mini" type="danger" @click="handlelose(scope.$index, scope.row)">关闭
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+      </el-main>
+    </el-container>
+    <el-dialog title="创建班级" :visible.sync="dialogFormVisible">
+      <el-form :model="form">
+        <el-form-item :rules="[{required:true,message:'班级名不能为空'}]" label="班级名称"
+                      :label-width="formLabelWidth">
+          <el-input v-model="form.name" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item :rules="[{required:true,message:'班级描述不能为空'}]" label="班级描述"
+                      :label-width="formLabelWidth">
+          <el-input v-model="form.description" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="creategroup">确 定</el-button>
+      </div>
+    </el-dialog>
+    <el-dialog title="修改班级信息" :visible.sync="dialogFormVisiblec">
+      <el-form :model="form">
+        <el-form-item :rules="[{required:true,message:'班级名不能为空'}]" label="班级名称"
+                      :label-width="formLabelWidth">
+          <el-input v-model="form.name" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item :rules="[{required:true,message:'班级描述不能为空'}]" label="班级描述"
+                      :label-width="formLabelWidth">
+          <el-input v-model="form.description" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisiblec = false">取 消</el-button>
+        <el-button type="primary" @click="editgroup">确 定</el-button>
+      </div>
+    </el-dialog>
+  </el-container>
 </template>
-
 <script>
-	import Vue from 'vue'
-	export default {
-		created() {
-			Vue.axios.get('http://localhost:5000/home/').then((response) => {
-				response = JSON.parse(response.request.responseText);
-				if (response.code === 200) {
-					this.project_num = response.data.project_num,
-						this.task_num = response.data.task_num,
-						this.user_num = response.data.user_num
-				}
-			})
-			this.taskt = true;
-			this.classt = false;
-			this.usert = false;
-			if (this.$root.USER.name != null) {
-				this.usert = true;
-				this.getgroups();
-				this.gettasks();
-			}
+import Vue from 'vue'
+export default {
+  created() {
+    Vue.axios.get('http://localhost:5000/home/').then((response) => {
+      response = JSON.parse(response.request.responseText);
+      if (response.code === 200) {
+        this.project_num = response.data.project_num,
+            this.task_num = response.data.task_num,
+            this.user_num = response.data.user_num
+      }
+    })
+    this.taskt = true;
+    this.classt = false;
+    this.usert = false;
+    if (this.$root.USER.name != null) {
+      this.usert = true;
+      this.getgroup();
+      this.getTaskSet();
+    }
 
-		},
-		data() {
-			return {
-				project_num: 111,
-				task_num: 2222,
-				user_num: 33333,
+  },
+  data() {
+    return {
+      all: 10, //总页数
+      cur: 1, //当前页码
+      totalPage: 0, //当前条数
 
-				taskt: true,
-				classt: false,
-				usert: false,
+      project_num: 111,
+      task_num: 2222,
+      user_num: 33333,
 
-				dialogFormVisible: false,
-				dialogFormVisiblec: false,
-				dialogeditclass: false,
+      taskt: true,
+      classt: false,
+      usert: false,
 
-				groupid: null,
-				form: {
-					name: '',
-					description: '',
-				},
-				formLabelWidth: '120px',
+      dialogFormVisible: false,
+      dialogFormVisiblec: false,
 
-				tableData: [],
-				tableData2: [],
-				search: ''
-			}
-		},
-		methods: {
-			gettasks(){
-				Vue.axios.get('http://localhost:5000/task/tasksets/' + this.$root.USER.id + '/1/5').then((response) => {
-					response = JSON.parse(response.request.responseText);
-					if (response.code === 200) {
-						console.log(response);
-						this.tableData = response.data.groups;
-						console.log(this.tableData[1].name)
-					}
-				})
-			},
-			getgroups() { //在需要重新获取班级信息的地方调用
-				Vue.axios.get('http://localhost:5000/group/teacher/' + this.$root.USER.id + '/1/5').then((response) => {
-					response = JSON.parse(response.request.responseText);
-					if (response.code === 200) {
-						console.log(response);
-						this.tableData2 = response.data.groups;
-						console.log(this.tableData2[1].name)
-					}
-				})
-			},
-			handletask(index, row) {
-				this.$root.usedtask.taskid = row.id;
-				console.log(this.$root.usedtask.taskid);
-				this.$router.push('edittask');
-			},
-			handlegroup(index, row) {
-				this.$root.usedgroup.groupid = row.id;
-				this.$root.usedgroup.invite_code = row.invite_code;
-				console.log(this.$root.usedgroup.groupid);
-				this.$router.push('editgroup');
-			},
-			handleEdit(index, row) {
-				this.form.name = row.name;
-				this.form.description = row.description;
-				this.groupid = row.id;
-				this.dialogFormVisiblec = true;//弹框
-				console.log(index, row);
-			},
-			handleDelete(index, row) {
-				this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
-					confirmButtonText: '确定',
-					cancelButtonText: '取消',
-					type: 'warning'
-				}).then(() => {
-					this.$axios({
-						method: 'post',
-						url: 'http://localhost:5000/group/delete',
-						data: {
-							id: row.id,
-						}
-					}).then(successResponse => {
-						successResponse = JSON.parse(successResponse.request.responseText);
-						console.log(successResponse);
-						this.getgroups();
-					})
-					this.$message({
-						type: 'success',
-						message: '删除成功!'
-					});
-				}).catch(() => {
-					this.$message({
-						type: 'info',
-						message: '已取消'
-					});
-				});
-				console.log(index, row);
-			},
-			handlelose(index, row) {
-				this.$confirm('是否确认关闭该班级?', '提示', {
-					confirmButtonText: '确定',
-					cancelButtonText: '取消',
-					type: 'warning'
-				}).then(() => {
-					this.$axios({
-						method: 'post',
-						url: 'http://localhost:5000/group/close',
-						data: {
-							id: row.id,
-						}
-					}).then(successResponse => {
-						successResponse = JSON.parse(successResponse.request.responseText);
-						console.log(successResponse);
-						this.getgroups();
-					})
-					this.$message({
-						type: 'success',
-						message: '关闭成功!'
-					});
-				}).catch(() => {
-					this.$message({
-						type: 'info',
-						message: '已取消'
-					});
-				});
-				console.log(index, row);
-			},
-			person() {
-				this.$router.push('person')
-			},
-			editgroup() {
-				this.dialogFormVisiblec = false;
-				this.$axios({
-					method: 'post',
-					url: 'http://localhost:5000/group/edit',
-					data: {
-						id: this.groupid,
-						name: this.form.name,
-						description: this.form.description,
-					}
-				}).then(successResponse => {
-					this.form.name = '';
-					this.form.description = '';
-					successResponse = JSON.parse(successResponse.request.responseText);
-					console.log(successResponse)
-					this.getgroups();
-				})
+      groupid: null,
+      form: {
+        name: '',
+        description: '',
+      },
+      formLabelWidth: '120px',
 
-			},
-			creategroup() {
-				this.dialogFormVisible = false;
-				this.$axios({
-					method: 'post',
-					url: 'http://localhost:5000/group/add',
-					data: {
-						name: this.form.name,
-						description: this.form.description,
-						teacher_id: this.$root.USER.id,
-					}
-				}).then(successResponse => {
-					this.form.name = '';
-					this.form.description = '';
-					successResponse = JSON.parse(successResponse.request.responseText);
-					this.getgroups();
-					console.log(successResponse)
-				})
-			},
-			quit() {
-				this.$root.USER.name = null;
-				this.$root.USER.email = null;
-				this.$root.USER.id = null;
-				this.$root.USER.confirmed = false;
-				console.log(this.$root.USER.name)
-				console.log(this.$root.USER.email)
-				console.log(this.$root.USER.id)
-				console.log(this.$root.USER.confirmed)
-				this.$router.push('home')
-			},
-			task() {
-				this.classt = false;
-				this.taskt = true;
-				this.$forceUpdate()
-				console.log(this.taskt)
-			},
-			sclass() {
-				this.taskt = false;
-				this.classt = true;
-				this.$forceUpdate()
-				console.log(this.classt)
-			},
-			handleOpen(key, keyPath) {
-				console.log(key, keyPath);
-			},
-			handleClose(key, keyPath) {
-				console.log(key, keyPath);
-			},
-			gotologin() {
-				this.$router.push('login')
-			},
-			gotoregister() {
-				this.$router.push('register')
-			}
-		},
+      tableData: [],
+      tableData2: [],
+      search: ''
+    }
+  },
+  methods: {
+    //请求数据
+    dataListFn: function (index) {
+      this.$axios.get("http://127.0.0.1:8090/demand/selectListByPage", {
+        params: {
+          page: index,
+          limit: '10',
+          state: 0
+        }
+      }).then((res) => {
+        if (res.data.message == "success") {
+          this.dataList = [];
+          for (let i = 0; i < res.data.data.length; i++) {
+            this.dataList.push(res.data.data[i])
+          }
+          this.all = res.data.totalPage; //总页数
+          this.cur = res.data.pageNum;
+          this.totalPage = res.data.totalPage;
+        }
 
-	}
+      });
+    },
+    //分页
+    btnClick: function (data) { //页码点击事件
+      if (data != this.cur) {
+        this.cur = data
+      }
+      //根据点击页数请求数据
+      this.dataListFn(this.cur.toString());
+    },
+    pageClick: function () {
+      //根据点击页数请求数据
+      this.dataListFn(this.cur.toString());
+    },
+    getgroup() { //在需要重新获取班级信息的地方调用
+      Vue.axios.get('http://localhost:5000/group/teacher/' + this.$root.USER.id + '/1/5').then((response) => {
+        response = JSON.parse(response.request.responseText);
+        if (response.code === 200) {
+          console.log(response);
+          this.tableData2 = response.data.groups;
+          console.log(this.tableData2[1].name)
+        }
+      })
+    },
+    getTaskSet() { //在需要重新获取班级信息的地方调用
+      Vue.axios.get('http://localhost:5000/taskset/' + this.$root.USER.id + '/1/5').then((response) => {
+        // response = JSON.parse(response.request.responseText);
+        console.log(response);
+        if (response.data.code === 200) {
+          this.tableData = response.data.data.tasksets;
+          console.log(this.tableData);
+        }
+      })
+    },
+    handleTaskSetClick(e){
+      this.$router.push('/taskset/'+e.id)
+    },
+    handleEdit(index, row) {
+      this.form.name = row.name;
+      this.form.description = row.description;
+      this.groupid = row.id;
+      this.dialogFormVisiblec = true;
+      console.log(index, row);
+    },
+    handleDelete(index, row) {
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$axios({
+          method: 'post',
+          url: 'http://localhost:5000/group/delete',
+          data: {
+            id: row.id,
+          }
+        }).then(successResponse => {
+          successResponse = JSON.parse(successResponse.request.responseText);
+          console.log(successResponse);
+          this.getgroup();
+        })
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消'
+        });
+      });
+      console.log(index, row);
+    },
+    handlelose(index, row) {
+      this.$confirm('是否确认关闭该班级?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$axios({
+          method: 'post',
+          url: 'http://localhost:5000/group/close',
+          data: {
+            id: row.id,
+          }
+        }).then(successResponse => {
+          successResponse = JSON.parse(successResponse.request.responseText);
+          console.log(successResponse);
+          this.getgroup();
+        })
+        this.$message({
+          type: 'success',
+          message: '关闭成功!'
+        });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消'
+        });
+      });
+      console.log(index, row);
+    },
+    person() {
+      this.$router.push('person')
+    },
+    editgroup() {
+      this.dialogFormVisiblec = false;
+      this.$axios({
+        method: 'post',
+        url: 'http://localhost:5000/group/edit',
+        data: {
+          id: this.groupid,
+          name: this.form.name,
+          description: this.form.description,
+        }
+      }).then(successResponse => {
+        this.form.name = '';
+        this.form.description = '';
+        successResponse = JSON.parse(successResponse.request.responseText);
+        console.log(successResponse)
+        this.getgroup();
+      })
+    },
+    creategroup() {
+      this.dialogFormVisible = false;
+      console.log(this.$root.USER.id)
+      this.$axios({
+        method: 'post',
+        url: 'http://localhost:5000/group/add',
+        data: {
+          name: this.form.name,
+          description: this.form.description,
+          teacher_id: this.$root.USER.id,
+        }
+      }).then(successResponse => {
+        this.form.name = '';
+        this.form.description = '';
+        successResponse = JSON.parse(successResponse.request.responseText);
+        this.getgroup();
+        console.log(successResponse)
+      })
+    },
+    quit() {
+      this.$root.USER.name = null;
+      this.$root.USER.email = null;
+      this.$root.USER.id = null;
+      this.$root.USER.confirmed = false;
+      console.log(this.$root.USER.name)
+      console.log(this.$root.USER.email)
+      console.log(this.$root.USER.id)
+      console.log(this.$root.USER.confirmed)
+      this.$router.push('home')
+    },
+    task() {
+      this.getTaskSet();
+      this.classt = false;
+      this.taskt = true;
+      this.$forceUpdate()
+      console.log(this.taskt)
+    },
+    sclass() {
+      this.taskt = false;
+      this.classt = true;
+      this.$forceUpdate()
+      console.log(this.classt)
+    },
+    handleOpen(key, keyPath) {
+      console.log(key, keyPath);
+    },
+    handleClose(key, keyPath) {
+      console.log(key, keyPath);
+    },
+    gotologin() {
+      this.$router.push('login')
+    },
+    gotoregister() {
+      this.$router.push('register')
+    }
+  }
+}
 </script>
-
 <style>
-	/*分页*/
-	.page-bar {
-		margin: 40px auto;
-		margin-top: 150px;
+ul,
+li {
+  margin: 0px;
+  padding: 0px;
+}
 
-	}
+li {
+  list-style: none
+}
 
-	ul,
-	li {
-		margin: 0px;
-		padding: 0px;
-	}
+.page-bar li:first-child > a {
+  margin-left: 0px
+}
 
-	li {
-		list-style: none
-	}
+.page-bar a {
+  border: 1px solid #ddd;
+  text-decoration: none;
+  position: relative;
+  float: left;
+  padding: 6px 12px;
+  margin-left: -1px;
+  line-height: 1.42857143;
+  color: #5D6062;
+  cursor: pointer;
+  margin-right: 20px;
+}
 
-	.page-bar li:first-child>a {
-		margin-left: 0px
-	}
+.page-bar a:hover {
+  background-color: #eee;
+}
 
-	.page-bar a {
-		border: 1px solid #ddd;
-		text-decoration: none;
-		position: relative;
-		float: left;
-		padding: 6px 12px;
-		margin-left: -1px;
-		line-height: 1.42857143;
-		color: #5D6062;
-		cursor: pointer;
-		margin-right: 20px;
-	}
+.page-bar a.banclick {
+  cursor: not-allowed;
+}
 
-	.page-bar a:hover {
-		background-color: #eee;
-	}
+.page-bar .active a {
+  color: #fff;
+  cursor: default;
+  background-color: #E96463;
+  border-color: #E96463;
+}
 
-	.page-bar a.banclick {
-		cursor: not-allowed;
-	}
+.page-bar i {
+  font-style: normal;
+  color: #d44950;
+  margin: 0px 4px;
+  font-size: 12px;
+}
 
-	.page-bar .active a {
-		color: #fff;
-		cursor: default;
-		background-color: #E96463;
-		border-color: #E96463;
-	}
-
-	.page-bar i {
-		font-style: normal;
-		color: #d44950;
-		margin: 0px 4px;
-		font-size: 12px;
-	}
-
-	.el-header {
-		background-color: #B3C0D1;
-		color: #333;
-		line-height: 60px;
-	}
-
-	.el-aside {
-		color: #333;
-	}
+.header {
+  color: #333;
+  line-height: 60px;
+  text-align: right;
+  font-size: 12px
+}
 </style>
