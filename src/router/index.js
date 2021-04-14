@@ -53,7 +53,7 @@ export default new Router({
 			component: () => import("@/components/TaskSet.vue")
 		},
 		{
-			path: "/taskset/task/:taskid",
+			path: "/taskset/:tasksetid/task/:taskid",
 			component: () => import("@/components/TaskItem.vue")
 		},
 		{
