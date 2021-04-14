@@ -61,14 +61,9 @@
 						email:this.form.email,
 						password:this.form.password,
 						password2:this.form.repassword,
-						// name:"Maxttt",
-						// email:"xute616413350@163.com",
-						// password:"wangzhe56123",
-						// password2:"wangzhe56123",
 					}
-				}).then(successResponse => {
-					successResponse=JSON.parse(successResponse.request.responseText);
-					console.log(successResponse.code)
+				}).then(() => {
+					this.$router.push('/')
 				})
 			}
 		},

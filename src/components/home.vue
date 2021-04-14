@@ -1,9 +1,6 @@
 <template>
 	<div class="home">
 		<el-row :gutter="0">
-			<!-- 			<el-col :span="6">
-				<div class="grid-content bg-purple">1</div>
-			</el-col> -->
 			<el-col :span="3" :offset="21" class="top">
 				<el-button :span="3" type="primary" @click="gotologin">登录</el-button>
 				<el-button :span="3" type="primary" plain @click="gotoregister">注册</el-button>
@@ -57,14 +54,6 @@
 			})
 		},
 		methods: {
-			// onSubmit() {
-			// 	this.$axios({
-			// 		method: 'get',
-			// 		url: 'http://localhost:5000/demo'
-			// 	}).then(successResponse => {
-			// 		console.log(successResponse)
-			// 	})
-			// },
 			gotologin() {
 				this.$router.push('login')
 			},
@@ -74,62 +63,3 @@
 		},
 	};
 </script>
-
-<style scoped>
-	.t1,
-	.t2,
-	.t3 {
-		color: white;
-	}
-
-	.t1 {
-		margin-top: 5em;
-	}
-
-	.t2 {
-		margin-top: 5em;
-	}
-
-	.t3 {
-		margin-top: 3em;
-	}
-
-	.enterbt {
-		font-size: 2em;
-		width: 6em;
-		height: 2em;
-		margin-top: 2em;
-	}
-
-	.text {
-		font-size: 4em;
-		display: inline;
-	}
-
-	.textt {
-		font-size: 2em;
-		display: inline;
-	}
-
-	.home {
-		height: 100vh;
-    overflow: hidden;
-		background-color: #42B983;
-	}
-
-	.top {
-		margin-top: 20px;
-	}
-
-	.el-row {
-		margin-bottom: 20px;
-
-		&:last-child {
-			margin-bottom: 0;
-		}
-	}
-
-	.el-col {
-		border-radius: 4px;
-	}
-</style>
