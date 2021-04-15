@@ -44,33 +44,21 @@
           </el-row>
           <el-row>
             <h1>逻辑性</h1>
-            <el-rate
-                v-model="projectData.logicality"
-                max="1"
-                disabled
-                show-score
-                text-color="#ff9900">
-            </el-rate>
+            <el-progress :text-inside="true"
+                         :stroke-width="26"
+                         :percentage="projectData.logicality*100"/>
           </el-row>
           <el-row>
             <h1>工作量</h1>
-            <el-rate
-                v-model="projectData.workload"
-                max="100"
-                disabled
-                show-score
-                text-color="#ff9900">
-            </el-rate>
+            <el-progress :text-inside="true"
+                         :stroke-width="26"
+                         :percentage="projectData.workload"/>
           </el-row>
           <el-row>
             <h1>程序复杂度</h1>
-            <el-rate
-                v-model="projectData.complexity"
-                max="100"
-                disabled
-                show-score
-                text-color="#ff9900">
-            </el-rate>
+            <el-progress :text-inside="true"
+                         :stroke-width="26"
+                         :percentage="projectData.complexity"/>
           </el-row>
         </el-col>
       </el-row>
@@ -80,22 +68,19 @@
       </el-row>
       <el-row type="flex" class="row-bg" justify="space-around">
         <el-col :span="6">
-          <el-upload
-              class="upload-demo"
-              action="https://jsonplaceholder.typicode.com/posts/"
-              :on-preview="handlePreview"
-              :on-remove="handleRemove"
-              :before-remove="beforeRemove"
-              :on-exceed="handleExceed"
-              :file-list="fileList"
-              limit="1"
-              :show-file-list="false">
-            <el-button size="small" type="primary">点击上传</el-button>
-          </el-upload>
+          <input v-show="false"
+                 id="uploadFileInput"
+                 type="file"
+                 @change="handleFileUpdate"
+                 accept=".sb3"/>
+          <el-button size="small" type="primary" @click="handleUploadClick">点击上传</el-button>
         </el-col>
         <el-col :span="6">
-          <el-button size="small" type="primary">下载</el-button>
+          <el-button size="small" type="primary" @click="handleDownloadClick">下载</el-button>
         </el-col>
+      </el-row>
+      <el-row>
+        <el-button size="small" type="primary" @click="handleTestClick">测评</el-button>
       </el-row>
     </el-main>
   </el-container>
@@ -132,10 +117,6 @@ export default {
         score: 5,
         workload: 1
       },
-      fileList: [{
-        name: 'food.jpeg',
-        url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
-      }]
     }
   },
   methods: {
@@ -169,20 +150,33 @@ export default {
     handleClick() {
       alert('button click');
     },
-    handleCommand(command) {
-      this.$message('click on item ' + command);
+    handleUploadClick() {
+      document.getElementById("uploadFileInput").click();
     },
-    handleRemove(file, fileList) {
-      console.log(file, fileList);
+    handleFileUpdate(e) {
+      const file = e.target.files[0];
+      const formData = new FormData();
+      formData.append('user_id', this.$root.USER.id);
+      formData.append('task_id', this.$route.params.taskid);
+      formData.append('file', file, file.name);
+      this.$axios({
+        method: 'post',
+        url: 'http://localhost:5000/project/upload',
+        data: formData,
+      }).then((response) => {
+        console.log(response);
+      });
     },
-    handlePreview(file) {
-      console.log(file);
+    handleDownloadClick(){
+      this.$axios({
+        method: 'get',
+        url: 'http://localhost:5000/project/download/'+this.projectData.id,
+      }).then((response) => {
+        console.log(response);
+      });
     },
-    handleExceed(files, fileList) {
-      this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
-    },
-    beforeRemove(file, fileList) {
-      return this.$confirm(`确定从 ${fileList} 移除 ${file.name} ？`);
+    handleTestClick(){
+
     }
   }
 }
