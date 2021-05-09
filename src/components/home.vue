@@ -16,20 +16,22 @@
         <div class="text text2">{{ task_num }}</div>
         <div class="textt tt2">道高质量题目</div>
       </el-col>
-      <el-col :span="8"  class="t3">
+      <el-col :span="8" class="t3">
         <div class="text text3">{{ user_num }}</div>
         <div class
-                 ="textt tt3">注册用户</div>
+                 ="textt tt3">注册用户
+        </div>
       </el-col>
     </el-row>
     <el-row style="margin-top: 70px">
-      <el-button type="primary" plain class="text">Enter</el-button>
+      <el-button type="primary" plain class="text" @click="guestEnter">Enter</el-button>
     </el-row>
   </div>
 </template>
 
 <script>
 import Vue from "vue";
+
 export default {
   name: "app",
   components: {},
@@ -45,8 +47,8 @@ export default {
       response = JSON.parse(response.request.responseText);
       if (response.code === 200) {
         (this.project_num = response.data.project_num),
-          (this.task_num = response.data.task_num),
-          (this.user_num = response.data.user_num);
+            (this.task_num = response.data.task_num),
+            (this.user_num = response.data.user_num);
       }
     });
   },
@@ -57,15 +59,21 @@ export default {
     gotoregister() {
       this.$router.push("register");
     },
+    guestEnter() {
+      this.$root.USER.id = 0
+      this.$router.push('main')
+    },
   },
 };
 </script>
 <style>
-body {
+.home {
   background: url(../assets/bg.jpeg) no-repeat;
   background-size: 100% 770px;
   overflow: hidden;
+  height: 100%;
 }
+
 .text,
 .textt {
   font-size: 1.5rem;

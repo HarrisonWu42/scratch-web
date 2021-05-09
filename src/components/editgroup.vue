@@ -1,8 +1,21 @@
 <template>
 	<el-container>
 		<!-- <input type="file" @change="handleFileUpdate" accept=".xlsx"> --><!-- 这是个上传文件的控件 -->
-		<el-header>
-			Header
+		<el-header class="header">
+      <div class="icon" style="display: inline">
+        <img src="../assets/icon.png" alt="" style="height: 50px; margin-top: 5px;"/>
+      </div>
+      <div v-if="usert" style="display: inline">
+        <span style="margin-right: 20px; font-size: 18px">{{
+            this.$root.USER.name
+          }}</span>
+        <el-button type="primary" @click="person">个人中心</el-button>
+        <el-button type="primary" @click="quit">注销</el-button>
+      </div>
+      <div v-else style="display: inline">
+        <el-button type="primary" @click="gotologin">登录</el-button>
+        <el-button type="primary" @click="gotoregister">注册</el-button>
+      </div>
 		</el-header>
 		<el-main>
 			<el-button size="mini" type="primary" @click="importstudents">一键导入学生</el-button>
@@ -31,6 +44,7 @@
 		data() {
 			return {
 				tableData: [],
+        usert: false,
 			}
 		},
 		created() {
@@ -87,6 +101,26 @@
 				});
 				console.log(index, row);
 			},
+      person() {
+        this.$router.push("person");
+      },
+      quit() {
+        this.$root.USER.name = null;
+        this.$root.USER.email = null;
+        this.$root.USER.id = null;
+        this.$root.USER.confirmed = false;
+        console.log(this.$root.USER.name);
+        console.log(this.$root.USER.email);
+        console.log(this.$root.USER.id);
+        console.log(this.$root.USER.confirmed);
+        this.$router.push("home");
+      },
+      gotologin() {
+        this.$router.push("login");
+      },
+      gotoregister() {
+        this.$router.push("register");
+      },
 		},
 	}
 </script>
@@ -105,4 +139,17 @@
 		text-align: center;
 		line-height: 160px;
 	}
+  .header{
+    color: #333;
+    width: 100%;
+    height: 60px;
+    line-height: 60px;
+    text-align: right;
+    font-size: 12px;
+    /* position: fixed;
+    top: 0;
+    z-index: 9999; */
+    background-color: #fff;
+    box-shadow: 0 0 1px 0px rgba(0, 0, 0, 0.3), 0 0 6px 2px rgba(0, 0, 0, 0.15);
+  }
 </style>

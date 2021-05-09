@@ -74,10 +74,12 @@
 						this.$root.USER.email = successResponse.data.email
 						this.$root.USER.id = successResponse.data.id
 						this.$root.USER.confirmed = successResponse.data.confirmed
+						this.$root.USER.role = successResponse.data.role
 						console.log(this.$root.USER.name)
 						console.log(this.$root.USER.email)
 						console.log(this.$root.USER.id)
 						console.log(this.$root.USER.confirmed)
+						console.log("用户角色"+this.$root.USER.role)
 						this.$router.push('main')
 					}
 				})

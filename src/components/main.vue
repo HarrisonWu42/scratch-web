@@ -1,13 +1,13 @@
 <template>
-  <el-container>
+  <el-container class="background">
     <el-header class="header">
       <div class="icon" style="display: inline">
         <img src="../assets/icon.png" alt="" style="height: 50px; margin-top: 5px;"/>
       </div>
       <div v-if="usert" style="display: inline">
         <span style="margin-right: 20px; font-size: 18px">{{
-          this.$root.USER.name
-        }}</span>
+            this.$root.USER.name
+          }}</span>
         <el-button type="primary" @click="person">个人中心</el-button>
         <el-button type="primary" @click="quit">注销</el-button>
       </div>
@@ -21,9 +21,9 @@
       <el-aside width="200px">
         <div class="br-1 background-primary" style="overflow: hidden">
           <a
-            class="tw-py-1 tw-pr-4 tw-flex tw-items-center tw-justify-center"
-            style="background: rgb(10, 73, 145)"
-            ><img src="../assets/scai.png" height="24" alt=""
+              class="tw-py-1 tw-pr-4 tw-flex tw-items-center tw-justify-center"
+              style="background: rgb(10, 73, 145)"
+          ><img src="../assets/scai.png" height="24" alt=""
           /></a>
           <div class="tw-flex tw-flex-wrap tw-pb-2">
             <div class="tw-mt-2" style="width: 100%">
@@ -49,7 +49,7 @@
             <i class="el-icon-menu"></i>
             <span slot="title">题目集</span>
           </el-menu-item>
-          <el-menu-item index="2" @click="sclass">
+          <el-menu-item v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')" index="2" @click="sclass">
             <i class="el-icon-menu"></i>
             <span slot="title">班级管理</span>
           </el-menu-item>
@@ -58,41 +58,43 @@
       <el-main>
         <div v-if="taskt">
           <el-table :data="tableData" @row-dblclick="handleTaskSetClick">
-            <el-table-column prop="id" label="ID" width="140" />
-            <el-table-column prop="name" label="姓名" width="120" />
+            <el-table-column prop="name" label="任务集" width="200"/>
+            <el-table-column prop="type" label="任务类型" width="150"/>
           </el-table>
         </div>
-        <div v-if="classt">
+        <div v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')&&classt">
           <el-button type="primary" @click="dialogFormVisible = true"
-            >创建班级</el-button
+          >创建班级
+          </el-button
           >
-          <el-table :data="tableData2">
+          <el-table :data="tableData2" @row-dblclick="handleClassClick">
             <el-table-column prop="name" label="班级名称" width="120">
             </el-table-column>
             <el-table-column prop="description" label="班级描述">
             </el-table-column>
             <el-table-column prop="invite_code" label="邀请码">
             </el-table-column>
-            <el-table-column prop="type" label="状态"> </el-table-column>
+            <el-table-column prop="type" label="状态"></el-table-column>
             <el-table-column label="操作">
               <template slot-scope="scope">
                 <el-button
-                  size="mini"
-                  @click="handleEdit(scope.$index, scope.row)"
-                  >编辑</el-button
+                    size="mini"
+                    @click="handleEdit(scope.$index, scope.row)"
+                >编辑
+                </el-button
                 >
                 <el-button
-                  size="mini"
-                  type="danger"
-                  @click="handleDelete(scope.$index, scope.row)"
+                    size="mini"
+                    type="danger"
+                    @click="handleDelete(scope.$index, scope.row)"
                 >
                   删除
                 </el-button>
                 <el-button
-                  size="mini"
-                  type="danger"
-                  @click="handlelose(scope.$index, scope.row)"
-                  >关闭
+                    size="mini"
+                    type="danger"
+                    @click="handlelose(scope.$index, scope.row)"
+                >关闭
                 </el-button>
               </template>
             </el-table-column>
@@ -103,16 +105,16 @@
     <el-dialog title="创建班级" :visible.sync="dialogFormVisible">
       <el-form :model="form">
         <el-form-item
-          :rules="[{ required: true, message: '班级名不能为空' }]"
-          label="班级名称"
-          :label-width="formLabelWidth"
+            :rules="[{ required: true, message: '班级名不能为空' }]"
+            label="班级名称"
+            :label-width="formLabelWidth"
         >
           <el-input v-model="form.name" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item
-          :rules="[{ required: true, message: '班级描述不能为空' }]"
-          label="班级描述"
-          :label-width="formLabelWidth"
+            :rules="[{ required: true, message: '班级描述不能为空' }]"
+            label="班级描述"
+            :label-width="formLabelWidth"
         >
           <el-input v-model="form.description" autocomplete="off"></el-input>
         </el-form-item>
@@ -125,16 +127,16 @@
     <el-dialog title="修改班级信息" :visible.sync="dialogFormVisiblec">
       <el-form :model="form">
         <el-form-item
-          :rules="[{ required: true, message: '班级名不能为空' }]"
-          label="班级名称"
-          :label-width="formLabelWidth"
+            :rules="[{ required: true, message: '班级名不能为空' }]"
+            label="班级名称"
+            :label-width="formLabelWidth"
         >
           <el-input v-model="form.name" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item
-          :rules="[{ required: true, message: '班级描述不能为空' }]"
-          label="班级描述"
-          :label-width="formLabelWidth"
+            :rules="[{ required: true, message: '班级描述不能为空' }]"
+            label="班级描述"
+            :label-width="formLabelWidth"
         >
           <el-input v-model="form.description" autocomplete="off"></el-input>
         </el-form-item>
@@ -148,14 +150,16 @@
 </template>
 <script>
 import Vue from "vue";
+
 export default {
   created() {
+    console.log(this.$root.USER.role)
     Vue.axios.get("http://localhost:5000/home/").then((response) => {
       response = JSON.parse(response.request.responseText);
       if (response.code === 200) {
         (this.project_num = response.data.project_num),
-          (this.task_num = response.data.task_num),
-          (this.user_num = response.data.user_num);
+            (this.task_num = response.data.task_num),
+            (this.user_num = response.data.user_num);
       }
     });
     this.taskt = true;
@@ -164,6 +168,8 @@ export default {
     if (this.$root.USER.name != null) {
       this.usert = true;
       this.getgroup();
+      this.getTaskSet();
+    } else {
       this.getTaskSet();
     }
   },
@@ -200,24 +206,24 @@ export default {
     //请求数据
     dataListFn: function (index) {
       this.$axios
-        .get("http://127.0.0.1:8090/demand/selectListByPage", {
-          params: {
-            page: index,
-            limit: "10",
-            state: 0,
-          },
-        })
-        .then((res) => {
-          if (res.data.message == "success") {
-            this.dataList = [];
-            for (let i = 0; i < res.data.data.length; i++) {
-              this.dataList.push(res.data.data[i]);
+          .get("http://127.0.0.1:8090/demand/selectListByPage", {
+            params: {
+              page: index,
+              limit: "10",
+              state: 0,
+            },
+          })
+          .then((res) => {
+            if (res.data.message == "success") {
+              this.dataList = [];
+              for (let i = 0; i < res.data.data.length; i++) {
+                this.dataList.push(res.data.data[i]);
+              }
+              this.all = res.data.totalPage; //总页数
+              this.cur = res.data.pageNum;
+              this.totalPage = res.data.totalPage;
             }
-            this.all = res.data.totalPage; //总页数
-            this.cur = res.data.pageNum;
-            this.totalPage = res.data.totalPage;
-          }
-        });
+          });
     },
     //分页
     btnClick: function (data) {
@@ -235,33 +241,36 @@ export default {
     getgroup() {
       //在需要重新获取班级信息的地方调用
       Vue.axios
-        .get(
-          "http://localhost:5000/group/teacher/" + this.$root.USER.id + "/1/5"
-        )
-        .then((response) => {
-          response = JSON.parse(response.request.responseText);
-          if (response.code === 200) {
-            console.log(response);
-            this.tableData2 = response.data.groups;
-            console.log(this.tableData2[1].name);
-          }
-        });
+          .get(
+              "http://localhost:5000/group/teacher/" + this.$root.USER.id + "/1/5"
+          )
+          .then((response) => {
+            response = JSON.parse(response.request.responseText);
+            if (response.code === 200) {
+              console.log(response);
+              this.tableData2 = response.data.groups;
+              console.log(this.tableData2[1].name);
+            }
+          });
     },
     getTaskSet() {
       //在需要重新获取班级信息的地方调用
       Vue.axios
-        .get("http://localhost:5000/taskset/" + this.$root.USER.id + "/1/5")
-        .then((response) => {
-          // response = JSON.parse(response.request.responseText);
-          console.log(response);
-          if (response.data.code === 200) {
-            this.tableData = response.data.data.tasksets;
-            console.log(this.tableData);
-          }
-        });
+          .get("http://localhost:5000/taskset/" + this.$root.USER.id + "/1/5")
+          .then((response) => {
+            // response = JSON.parse(response.request.responseText);
+            console.log(response);
+            if (response.data.code === 200) {
+              this.tableData = response.data.data.tasksets;
+              console.log(this.tableData);
+            }
+          });
     },
     handleTaskSetClick(e) {
-      this.$router.push("/taskset/" + e.id);
+      this.$router.push("/taskset/" + e.id + '/' + e.name);
+    },
+    handleClassClick() {
+      this.$router.push("/editgroup/");
     },
     handleEdit(index, row) {
       this.form.name = row.name;
@@ -276,29 +285,29 @@ export default {
         cancelButtonText: "取消",
         type: "warning",
       })
-        .then(() => {
-          this.$axios({
-            method: "post",
-            url: "http://localhost:5000/group/delete",
-            data: {
-              id: row.id,
-            },
-          }).then((successResponse) => {
-            successResponse = JSON.parse(successResponse.request.responseText);
-            console.log(successResponse);
-            this.getgroup();
+          .then(() => {
+            this.$axios({
+              method: "post",
+              url: "http://localhost:5000/group/delete",
+              data: {
+                id: row.id,
+              },
+            }).then((successResponse) => {
+              successResponse = JSON.parse(successResponse.request.responseText);
+              console.log(successResponse);
+              this.getgroup();
+            });
+            this.$message({
+              type: "success",
+              message: "删除成功!",
+            });
+          })
+          .catch(() => {
+            this.$message({
+              type: "info",
+              message: "已取消",
+            });
           });
-          this.$message({
-            type: "success",
-            message: "删除成功!",
-          });
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消",
-          });
-        });
       console.log(index, row);
     },
     handlelose(index, row) {
@@ -307,29 +316,29 @@ export default {
         cancelButtonText: "取消",
         type: "warning",
       })
-        .then(() => {
-          this.$axios({
-            method: "post",
-            url: "http://localhost:5000/group/close",
-            data: {
-              id: row.id,
-            },
-          }).then((successResponse) => {
-            successResponse = JSON.parse(successResponse.request.responseText);
-            console.log(successResponse);
-            this.getgroup();
+          .then(() => {
+            this.$axios({
+              method: "post",
+              url: "http://localhost:5000/group/close",
+              data: {
+                id: row.id,
+              },
+            }).then((successResponse) => {
+              successResponse = JSON.parse(successResponse.request.responseText);
+              console.log(successResponse);
+              this.getgroup();
+            });
+            this.$message({
+              type: "success",
+              message: "关闭成功!",
+            });
+          })
+          .catch(() => {
+            this.$message({
+              type: "info",
+              message: "已取消",
+            });
           });
-          this.$message({
-            type: "success",
-            message: "关闭成功!",
-          });
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消",
-          });
-        });
       console.log(index, row);
     },
     person() {
@@ -412,7 +421,8 @@ export default {
 };
 </script>
 <style>
-body {
+.background {
+  height: 100%;
   background-color: hsl(203, 33%, 95%);
 }
 
