@@ -57,7 +57,7 @@ export default new Router({
 			component: () => import("@/components/TaskItem.vue")
 		},
 		{
-			path: "/auth/confirm/:usercode",
+			path: "/auth/confirm/:token",
 			component: () => import("@/components/confirm.vue")
 		},
 		{

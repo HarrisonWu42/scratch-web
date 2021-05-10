@@ -6,9 +6,7 @@
         <img src="../assets/icon.png" alt="" style="height: 50px; margin-top: 5px;"/>
       </div>
       <div v-if="usert" style="display: inline">
-        <span style="margin-right: 20px; font-size: 18px">{{
-            this.$root.USER.name
-          }}</span>
+        <span style="margin-right: 20px; font-size: 18px">{{this.$root.USER.name}}</span>
         <el-button type="primary" @click="person">个人中心</el-button>
         <el-button type="primary" @click="quit">注销</el-button>
       </div>
@@ -28,9 +26,7 @@
 				</el-table-column>
 				<el-table-column label="操作">
 					<template slot-scope="scope">
-						<el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">
-							删除
-						</el-button>
+						<el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
 					</template>
 				</el-table-column>
 			</el-table>

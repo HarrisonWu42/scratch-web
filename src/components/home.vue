@@ -24,7 +24,7 @@
       </el-col>
     </el-row>
     <el-row style="margin-top: 70px">
-      <el-button type="primary" plain class="text" @click="guestEnter">Enter</el-button>
+      <el-button type="primary" plain class="text" @click="guestEnter">进 入</el-button>
     </el-row>
   </div>
 </template>

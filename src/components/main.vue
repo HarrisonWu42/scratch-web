@@ -47,7 +47,7 @@
         <el-menu style="margin: 10px">
           <el-menu-item index="1" @click="task">
             <i class="el-icon-menu"></i>
-            <span slot="title">题目集</span>
+            <span slot="title">任务集</span>
           </el-menu-item>
           <el-menu-item v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')" index="2" @click="sclass">
             <i class="el-icon-menu"></i>
@@ -55,23 +55,19 @@
           </el-menu-item>
           <el-menu-item v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')" index="3" @click="toTaskDb">
             <i class="el-icon-menu"></i>
-            <span slot="title">任务集管理</span>
+            <span slot="title">题库</span>
           </el-menu-item>
         </el-menu>
       </el-aside>
       <el-main>
         <div v-if="taskt">
-
           <el-table :data="tableData" @row-dblclick="handleTaskSetClick">
             <el-table-column prop="name" label="任务集" width="200"/>
             <el-table-column prop="type" label="任务类型" width="150"/>
           </el-table>
         </div>
         <div v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')&&classt">
-          <el-button type="primary" @click="dialogFormVisible = true"
-          >创建班级
-          </el-button
-          >
+          <el-button type="primary" @click="dialogFormVisible = true">创建班级</el-button>
           <el-table :data="tableData2" @row-dblclick="handleClassClick">
             <el-table-column prop="name" label="班级名称" width="120">
             </el-table-column>
@@ -95,12 +91,12 @@
                 >
                   删除
                 </el-button>
-                <el-button
-                    size="mini"
-                    type="danger"
-                    @click="handlelose(scope.$index, scope.row)"
-                >关闭
-                </el-button>
+<!--                <el-button-->
+<!--                    size="mini"-->
+<!--                    type="danger"-->
+<!--                    @click="handlelose(scope.$index, scope.row)"-->
+<!--                >关闭-->
+<!--                </el-button>-->
               </template>
             </el-table-column>
           </el-table>
@@ -297,7 +293,8 @@ export default {
       //在需要重新获取班级信息的地方调用
       Vue.axios
           .get(
-              "http://localhost:5000/group/teacher/" + this.$root.USER.id + "/1/5"
+              "http://localhost:5000/group/teacher/" + this.$root.USER.id
+      // "http://localhost:5000/group/teacher/" + this.$root.USER.id + "/1/5"
           )
           .then((response) => {
             response = JSON.parse(response.request.responseText);

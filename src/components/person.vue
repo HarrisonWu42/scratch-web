@@ -5,9 +5,7 @@
         <img src="../assets/icon.png" alt="" style="height: 50px; margin-top: 5px;"/>
       </div>
       <div v-if="usert" style="display: inline">
-        <span style="margin-right: 20px; font-size: 18px">{{
-            this.$root.USER.name
-          }}</span>
+        <span style="margin-right: 20px; font-size: 18px">{{ this.$root.USER.name }}</span>
         <el-button type="primary" @click="person">个人中心</el-button>
         <el-button type="primary" @click="quit">注销</el-button>
       </div>
@@ -21,7 +19,7 @@
         <el-col :span="6" :offset="4">
           <div class="grid-content bg-purple">昵称：</div>
         </el-col>
-        <el-col :span="3" >
+        <el-col :span="3">
           <div class="grid-content bg-purple">{{ username }}</div>
         </el-col>
         <el-col :span="3" :offset="3">
