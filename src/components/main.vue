@@ -57,6 +57,7 @@
       </el-aside>
       <el-main>
         <div v-if="taskt">
+<!--          <el-button v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')&&classt"></el-button>-->
           <el-table :data="tableData" @row-dblclick="handleTaskSetClick">
             <el-table-column prop="name" label="任务集" width="200"/>
             <el-table-column prop="type" label="任务类型" width="150"/>

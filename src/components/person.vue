@@ -16,15 +16,15 @@
         <el-button type="primary" @click="gotoregister">注册</el-button>
       </div>
     </el-header>
-    <el-main class="main">
+    <el-main class="main" style="margin-top: 100px;">
       <el-row :gutter="20">
         <el-col :span="6" :offset="4">
           <div class="grid-content bg-purple">昵称：</div>
         </el-col>
-        <el-col :span="3" :offset="1">
+        <el-col :span="3" >
           <div class="grid-content bg-purple">{{ username }}</div>
         </el-col>
-        <el-col :span="3">
+        <el-col :span="3" :offset="3">
           <el-button type="primary" plain @click="editname">修改昵称</el-button>
         </el-col>
       </el-row>
@@ -32,10 +32,10 @@
         <el-col :span="6" :offset="4">
           <div class="grid-content bg-purple">邮箱地址：</div>
         </el-col>
-        <el-col :span="5" :offset="1">
+        <el-col :span="3" :offset="1">
           <div class="grid-content bg-purple">{{ useremail }}</div>
         </el-col>
-        <el-col :span="3">
+        <el-col :span="3" :offset="2">
           <el-button type="primary" plain @click="editemail">修改邮箱</el-button>
         </el-col>
       </el-row>
@@ -54,11 +54,11 @@
         <el-col :span="5" :offset="1">
           <el-input v-model="input" placeholder="请输入邀请码"></el-input>
         </el-col>
-        <el-col :span="2">
+        <el-col :span="2" :offset="1">
           <el-button type="primary" plain @click="beinvite">接受邀请</el-button>
         </el-col>
       </el-row>
-      <el-row :gutter="20">
+      <el-row :gutter="20" style="margin-top: 80px">
         <el-button type="primary" @click="gotomain">返回主页</el-button>
       </el-row>
     </el-main>
@@ -74,9 +74,9 @@ export default {
     if (this.$root.USER.name != null) {
       this.usert = true;
       this.getgroup();
-      this.getTaskSet();
+      this.getTaskSetList();
     } else {
-      this.getTaskSet();
+      this.getTaskSetList();
     }
   },
   data() {
@@ -87,6 +87,7 @@ export default {
     }
   },
   methods: {
+
     person() {
       this.$router.push("person");
     },
@@ -102,9 +103,6 @@ export default {
       this.$router.push("home");
     },
     goBack() {
-      this.$router.back()
-    },
-    handleBackClick() {
       this.$router.back()
     },
     gotologin() {
