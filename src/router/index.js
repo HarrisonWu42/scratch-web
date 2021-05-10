@@ -60,5 +60,9 @@ export default new Router({
 			path: "/auth/confirm/:usercode",
 			component: () => import("@/components/confirm.vue")
 		},
+		{
+			path: "/taskDB",
+			component: () => import("@/components/TaskDB.vue")
+		},
 	]
 })

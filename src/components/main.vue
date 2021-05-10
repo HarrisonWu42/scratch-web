@@ -53,14 +53,15 @@
             <i class="el-icon-menu"></i>
             <span slot="title">班级管理</span>
           </el-menu-item>
+          <el-menu-item v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')" index="3" @click="toTaskDb">
+            <i class="el-icon-menu"></i>
+            <span slot="title">任务集管理</span>
+          </el-menu-item>
         </el-menu>
       </el-aside>
       <el-main>
         <div v-if="taskt">
-          <el-button type="primary" @click="dialogTaskVisible = true"
-          >创建任务
-          </el-button
-          >
+
           <el-table :data="tableData" @row-dblclick="handleTaskSetClick">
             <el-table-column prop="name" label="任务集" width="200"/>
             <el-table-column prop="type" label="任务类型" width="150"/>
@@ -103,6 +104,12 @@
               </template>
             </el-table-column>
           </el-table>
+        </div>
+        <div v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')&&tasksett">
+          <el-button type="primary" @click="dialogTaskVisible = true"
+          >创建任务
+          </el-button
+          >
         </div>
       </el-main>
     </el-container>
@@ -217,6 +224,7 @@ export default {
       user_num: 33333,
 
       taskt: true,
+      tasksett: false,
       classt: false,
       usert: false,
 
@@ -247,6 +255,9 @@ export default {
     };
   },
   methods: {
+    toTaskDb(){
+      this.$router.push('taskDB')
+    },
     //请求数据
     dataListFn: function (index) {
       this.$axios
@@ -459,14 +470,23 @@ export default {
       this.getTaskSet();
       this.classt = false;
       this.taskt = true;
+      this.tasksett = false
       this.$forceUpdate();
       console.log(this.taskt);
     },
     sclass() {
       this.taskt = false;
       this.classt = true;
+      this.tasksett = false
       this.$forceUpdate();
       console.log(this.classt);
+    },
+    staskset() {
+      this.taskt = false;
+      this.classt = false;
+      this.tasksett = true
+      this.$forceUpdate();
+
     },
     handleOpen(key, keyPath) {
       console.log(key, keyPath);
