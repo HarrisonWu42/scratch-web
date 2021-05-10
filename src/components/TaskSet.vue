@@ -20,6 +20,8 @@
       <el-aside class="aside" width="250px">
         <el-page-header @back="goBack" :content="taskSetData.name">
         </el-page-header>
+
+        <el-tag style="margin-top: 50px">个人评分{{score}}/{{total_score}}</el-tag>
       </el-aside>
       <el-main>
         <el-table
@@ -38,17 +40,17 @@
               width="180">
           </el-table-column>
           <el-table-column
-              prop="commitNum"
+              prop="commit_num"
               label="提交数"
               width="180">
           </el-table-column>
           <el-table-column
-              prop="perfectNum"
+              prop="perfect_num"
               label="满分数"
               width="180">
           </el-table-column>
           <el-table-column
-              prop="perfectRate"
+              prop="perfect_rate"
               label="满分率"
               width="180">
           </el-table-column>
@@ -74,15 +76,16 @@ export default {
             (this.user_num = response.data.user_num);
       }
     });
+    this.getUserTask();
     this.taskt = true;
     this.classt = false;
     this.usert = false;
     if (this.$root.USER.name != null) {
       this.usert = true;
       this.getgroup();
-      this.getTaskSet();
+      this.getTaskSetList();
     } else {
-      this.getTaskSet();
+      this.getTaskSetList();
     }
   },
   data() {
@@ -96,6 +99,8 @@ export default {
       taskt: true,
       classt: false,
       usert: false,
+      score:null,
+      total_score:null
     }
   },
   methods: {
@@ -122,7 +127,8 @@ export default {
     getTaskSetList() {
       this.$axios({
         method: 'get',
-        url: 'http://localhost:5000/taskset/task/' + this.taskSetData.id + '/1/5',
+        // url: 'http://localhost:5000/taskset/task/' + this.taskSetData.id + '/1/5',
+        url: 'http://localhost:5000/taskset/task/' + this.taskSetData.id,
       }).then(response => {
         this.tableData = response.data.data.tasks
       })
@@ -164,6 +170,16 @@ export default {
     gotoregister() {
       this.$router.push("register");
     },
+    getUserTask(){
+      var vm = this
+      this.$axios({
+        method: 'get',
+        url: 'http://localhost:5000/taskset/' + this.$root.USER.id+"/"+this.taskSetData.id,
+      }).then(response => {
+        vm.score = response.data.data.score
+        vm.total_score = response.data.data.total_score
+      })
+    }
   }
 }
 </script>

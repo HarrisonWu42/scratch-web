@@ -1,6 +1,21 @@
 <template>
   <el-container>
-    <el-header>个人中心</el-header>
+    <el-header class="header">
+      <div class="icon" style="display: inline">
+        <img src="../assets/icon.png" alt="" style="height: 50px; margin-top: 5px;"/>
+      </div>
+      <div v-if="usert" style="display: inline">
+        <span style="margin-right: 20px; font-size: 18px">{{
+            this.$root.USER.name
+          }}</span>
+        <el-button type="primary" @click="person">个人中心</el-button>
+        <el-button type="primary" @click="quit">注销</el-button>
+      </div>
+      <div v-else style="display: inline">
+        <el-button type="primary" @click="gotologin">登录</el-button>
+        <el-button type="primary" @click="gotoregister">注册</el-button>
+      </div>
+    </el-header>
     <el-main class="main">
       <el-row :gutter="20">
         <el-col :span="6" :offset="4">
@@ -54,7 +69,15 @@
 export default {
   created() {
     this.username = this.$root.USER.name;
-    this.useremail = this.$root.USER.email
+    this.useremail = this.$root.USER.email;
+    this.usert = false;
+    if (this.$root.USER.name != null) {
+      this.usert = true;
+      this.getgroup();
+      this.getTaskSet();
+    } else {
+      this.getTaskSet();
+    }
   },
   data() {
     return {
@@ -64,8 +87,32 @@ export default {
     }
   },
   methods: {
-
-
+    person() {
+      this.$router.push("person");
+    },
+    quit() {
+      this.$root.USER.name = null;
+      this.$root.USER.email = null;
+      this.$root.USER.id = null;
+      this.$root.USER.confirmed = false;
+      console.log(this.$root.USER.name);
+      console.log(this.$root.USER.email);
+      console.log(this.$root.USER.id);
+      console.log(this.$root.USER.confirmed);
+      this.$router.push("home");
+    },
+    goBack() {
+      this.$router.back()
+    },
+    handleBackClick() {
+      this.$router.back()
+    },
+    gotologin() {
+      this.$router.push("login");
+    },
+    gotoregister() {
+      this.$router.push("register");
+    },
     editname() {
       this.$prompt('请输入新昵称', '提示', {
         confirmButtonText: '确定',

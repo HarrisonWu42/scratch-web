@@ -269,8 +269,8 @@ export default {
     handleTaskSetClick(e) {
       this.$router.push("/taskset/" + e.id + '/' + e.name);
     },
-    handleClassClick() {
-      this.$router.push("/editgroup/");
+    handleClassClick(e) {
+      this.$router.push("/editgroup/"+e.id);
     },
     handleEdit(index, row) {
       this.form.name = row.name;

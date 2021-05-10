@@ -37,7 +37,7 @@ export default new Router({
 			component: () => import("@/components/auth/confirm.vue")
 		},
 		{
-			path: "/editgroup",
+			path: "/editgroup/:groupid/",
 			component: () => import("@/components/editgroup.vue")
 		},
 		{
@@ -58,7 +58,7 @@ export default new Router({
 		},
 		{
 			path: "/auth/confirm/:usercode",
-			redirect: "/home"
+			component: () => import("@/components/confirm.vue")
 		},
 	]
 })
