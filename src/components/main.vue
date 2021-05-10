@@ -57,7 +57,10 @@
       </el-aside>
       <el-main>
         <div v-if="taskt">
-<!--          <el-button v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')&&classt"></el-button>-->
+          <el-button type="primary" @click="dialogTaskVisible = true"
+          >创建任务
+          </el-button
+          >
           <el-table :data="tableData" @row-dblclick="handleTaskSetClick">
             <el-table-column prop="name" label="任务集" width="200"/>
             <el-table-column prop="type" label="任务类型" width="150"/>
@@ -147,6 +150,35 @@
         <el-button type="primary" @click="editgroup">确 定</el-button>
       </div>
     </el-dialog>
+    <el-dialog title="创建任务集" :visible.sync="dialogTaskVisible">
+      <el-form :model="createtask">
+        <el-form-item
+                :rules="[{ required: true, message: '任务集名称不能为空' }]"
+                label="任务集名称"
+                :label-width="formLabelWidth"
+        >
+          <el-input v-model="createtask.name" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item
+                :rules="[{ required: true, message: '任务集不能为空' }]"
+                label="任务集描述"
+                :label-width="formLabelWidth"
+        >
+          <el-select v-model="createtask.type" placeholder="请选择">
+            <el-option
+                    v-for="item in options"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogTaskVisible = false">取 消</el-button>
+        <el-button type="primary" @click="createTask">确 定</el-button>
+      </div>
+    </el-dialog>
   </el-container>
 </template>
 <script>
@@ -190,14 +222,25 @@ export default {
 
       dialogFormVisible: false,
       dialogFormVisiblec: false,
-
+      dialogTaskVisible: false,
       groupid: null,
       form: {
         name: "",
         description: "",
       },
       formLabelWidth: "120px",
-
+      //创建任务
+      createtask:{
+        name:"",
+        type:null,
+      },
+      options: [{
+        value: '0',
+        label: '个人题目集'
+      }, {
+        value: '1',
+        label: '固定题目集'
+      }],
       tableData: [],
       tableData2: [],
       search: "",
@@ -379,6 +422,25 @@ export default {
         this.form.description = "";
         successResponse = JSON.parse(successResponse.request.responseText);
         this.getgroup();
+        console.log(successResponse);
+      });
+    },
+    createTask(){
+      this.dialogTaskVisible = false;
+      this.$axios({
+        method: "post",
+        url: "http://localhost:5000/taskset/add",
+        data: {
+          name: this.createtask.name,
+          type: this.createtask.type,
+
+        },
+      }).then((successResponse) => {
+        this.createtask.name = "";
+        this.createtask.type = "";
+
+        successResponse = JSON.parse(successResponse.request.responseText);
+        this.getTaskSet();
         console.log(successResponse);
       });
     },
