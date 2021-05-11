@@ -576,9 +576,9 @@ export default {
 }
 
 * {
-  --tw-ring-inset: var(--tw-empty, /*!*/ /*!*/);
+  /*--tw-ring-inset: var(--tw-empty, !*!*! !*!*!);*/
   --tw-ring-offset-width: 0px;
-  --tw-ring-offset-color: var(--text-normal);
+  /*--tw-ring-offset-color: var(--text-normal);*/
   --tw-ring-color: rgba(147, 197, 253, 0.5);
   --tw-ring-offset-shadow: 0 0 #0000;
   --tw-ring-shadow: 0 0 #0000;
