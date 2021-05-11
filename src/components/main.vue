@@ -49,13 +49,17 @@
             <i class="el-icon-menu"></i>
             <span slot="title">任务集</span>
           </el-menu-item>
-          <el-menu-item v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')" index="2" @click="sclass">
+          <el-menu-item v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')" index="2" @click="toClass">
             <i class="el-icon-menu"></i>
             <span slot="title">班级管理</span>
           </el-menu-item>
           <el-menu-item v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')" index="3" @click="toTaskDb">
             <i class="el-icon-menu"></i>
             <span slot="title">题库</span>
+          </el-menu-item>
+          <el-menu-item v-if="($root.USER.role==='Administrator')" index="4" @click="sclass">
+            <i class="el-icon-menu"></i>
+            <span slot="title">权限管理</span>
           </el-menu-item>
         </el-menu>
       </el-aside>
@@ -66,41 +70,74 @@
             <el-table-column prop="type" label="任务类型" width="150"/>
           </el-table>
         </div>
-        <div v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')&&classt">
-          <el-button type="primary" @click="dialogFormVisible = true">创建班级</el-button>
+        <div v-if="($root.USER.role==='Administrator')&&classt">
           <el-table :data="tableData2" @row-dblclick="handleClassClick">
-            <el-table-column prop="name" label="班级名称" width="120">
+            <el-table-column prop="id" label="用户id" width="120">
             </el-table-column>
-            <el-table-column prop="description" label="班级描述">
+            <el-table-column prop="name" label="姓名">
             </el-table-column>
-            <el-table-column prop="invite_code" label="邀请码">
+            <el-table-column prop="email" label="邮箱">
             </el-table-column>
-            <el-table-column prop="type" label="状态"></el-table-column>
+            <el-table-column prop="role" label="角色"></el-table-column>
             <el-table-column label="操作">
               <template slot-scope="scope">
                 <el-button
                     size="mini"
                     @click="handleEdit(scope.$index, scope.row)"
-                >编辑
-                </el-button
-                >
-                <el-button
-                    size="mini"
-                    type="danger"
-                    @click="handleDelete(scope.$index, scope.row)"
-                >
-                  删除
+                >修改角色
                 </el-button>
 <!--                <el-button-->
 <!--                    size="mini"-->
 <!--                    type="danger"-->
-<!--                    @click="handlelose(scope.$index, scope.row)"-->
-<!--                >关闭-->
+<!--                    @click="handleDelete(scope.$index, scope.row)"-->
+<!--                >-->
+<!--                  删除-->
 <!--                </el-button>-->
+                <!--                <el-button-->
+                <!--                    size="mini"-->
+                <!--                    type="danger"-->
+                <!--                    @click="handlelose(scope.$index, scope.row)"-->
+                <!--                >关闭-->
+                <!--                </el-button>-->
               </template>
             </el-table-column>
           </el-table>
         </div>
+<!--        <div v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')&&classt">-->
+<!--          <el-button type="primary" @click="dialogFormVisible = true">创建班级</el-button>-->
+<!--          <el-table :data="tableData2" @row-dblclick="handleClassClick">-->
+<!--            <el-table-column prop="name" label="班级名称" width="120">-->
+<!--            </el-table-column>-->
+<!--            <el-table-column prop="description" label="班级描述">-->
+<!--            </el-table-column>-->
+<!--            <el-table-column prop="invite_code" label="邀请码">-->
+<!--            </el-table-column>-->
+<!--            <el-table-column prop="type" label="状态"></el-table-column>-->
+<!--            <el-table-column label="操作">-->
+<!--              <template slot-scope="scope">-->
+<!--                <el-button-->
+<!--                    size="mini"-->
+<!--                    @click="handleEdit(scope.$index, scope.row)"-->
+<!--                >编辑-->
+<!--                </el-button-->
+<!--                >-->
+<!--                <el-button-->
+<!--                    size="mini"-->
+<!--                    type="danger"-->
+<!--                    @click="handleDelete(scope.$index, scope.row)"-->
+<!--                >-->
+<!--                  删除-->
+<!--                </el-button>-->
+<!--&lt;!&ndash;                <el-button&ndash;&gt;-->
+<!--&lt;!&ndash;                    size="mini"&ndash;&gt;-->
+<!--&lt;!&ndash;                    type="danger"&ndash;&gt;-->
+<!--&lt;!&ndash;                    @click="handlelose(scope.$index, scope.row)"&ndash;&gt;-->
+<!--&lt;!&ndash;                >关闭&ndash;&gt;-->
+<!--&lt;!&ndash;                </el-button>&ndash;&gt;-->
+<!--              </template>-->
+<!--            </el-table-column>-->
+<!--          </el-table>-->
+<!--        </div>-->
         <div v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')&&tasksett">
           <el-button type="primary" @click="dialogTaskVisible = true"
           >创建任务
@@ -131,21 +168,28 @@
         <el-button type="primary" @click="creategroup">确 定</el-button>
       </div>
     </el-dialog>
-    <el-dialog title="修改班级信息" :visible.sync="dialogFormVisiblec">
+    <el-dialog title="修改角色" :visible.sync="dialogFormVisiblec">
       <el-form :model="form">
         <el-form-item
-            :rules="[{ required: true, message: '班级名不能为空' }]"
-            label="班级名称"
+            :rules="[{ required: true, message: '姓名不能为空' }]"
+            label="姓名"
             :label-width="formLabelWidth"
         >
           <el-input v-model="form.name" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item
-            :rules="[{ required: true, message: '班级描述不能为空' }]"
-            label="班级描述"
+            :rules="[{ required: true, message: '权限不能为空' }]"
+            label="权限"
             :label-width="formLabelWidth"
         >
-          <el-input v-model="form.description" autocomplete="off"></el-input>
+          <el-select v-model="form.role" placeholder="请选择">
+            <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+            </el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -229,8 +273,9 @@ export default {
       dialogTaskVisible: false,
       groupid: null,
       form: {
+        id: "",
         name: "",
-        description: "",
+        role:""
       },
       formLabelWidth: "120px",
       //创建任务
@@ -239,12 +284,16 @@ export default {
         type:null,
       },
       options: [{
-        value: '0',
-        label: '个人题目集'
+        value: 'Student',
+        label: 'Student'
       }, {
-        value: '1',
-        label: '固定题目集'
-      }],
+        value: 'Teacher',
+        label: 'Teacher'
+      },
+        {
+          value: 'Administrator',
+          label: 'Administrator'
+        }],
       tableData: [],
       tableData2: [],
       search: "",
@@ -254,6 +303,7 @@ export default {
     toTaskDb(){
       this.$router.push('taskDB')
     },
+
     //请求数据
     dataListFn: function (index) {
       this.$axios
@@ -293,14 +343,14 @@ export default {
       //在需要重新获取班级信息的地方调用
       Vue.axios
           .get(
-              "http://localhost:5000/group/teacher/" + this.$root.USER.id
+              "http://localhost:5000/admin/users"
       // "http://localhost:5000/group/teacher/" + this.$root.USER.id + "/1/5"
           )
           .then((response) => {
             response = JSON.parse(response.request.responseText);
             if (response.code === 200) {
               console.log(response);
-              this.tableData2 = response.data.groups;
+              this.tableData2 = response.data.users;
               console.log(this.tableData2[1].name);
             }
           });
@@ -326,8 +376,8 @@ export default {
     },
     handleEdit(index, row) {
       this.form.name = row.name;
-      this.form.description = row.description;
-      this.groupid = row.id;
+      this.form.role = row.role;
+      this.form.id = row.id;
       this.dialogFormVisiblec = true;
       console.log(index, row);
     },
@@ -393,25 +443,44 @@ export default {
           });
       console.log(index, row);
     },
+    toClass(){
+      this.$router.push("group");
+    },
     person() {
       this.$router.push("person");
     },
     editgroup() {
       this.dialogFormVisiblec = false;
+       console.log(this.form.id)
+      console.log(this.form.name)
       this.$axios({
         method: "post",
-        url: "http://localhost:5000/group/edit",
+        url: "http://localhost:5000/admin/edit-role/"+this.form.id,
         data: {
-          id: this.groupid,
-          name: this.form.name,
-          description: this.form.description,
+          role:this.form.role
         },
       }).then((successResponse) => {
-        this.form.name = "";
-        this.form.description = "";
+        // this.form.name = "";
+        // this.form.description = "";
+
         successResponse = JSON.parse(successResponse.request.responseText);
         console.log(successResponse);
-        this.getgroup();
+        if(successResponse.code ===200) {
+          this.getgroup();
+          this.$notify({
+            title: '成功',
+            message: '修改成功',
+            type: 'success',
+            duration: 2000
+          })
+        }else {
+          this.$notify({
+            title: '失败',
+            message: '修改失败',
+            type: 'warning',
+            duration: 2000
+          })
+        }
       });
     },
     creategroup() {

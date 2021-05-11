@@ -19,7 +19,7 @@
     <el-container>
       <el-aside width="200px">
         <el-menu style="margin: 10px">
-          <el-menu-item v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')" index="1" @click="staskset">
+          <el-menu-item v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')" index="1" route="taskDB">
             <i class="el-icon-menu"></i>
             <span slot="title">任务集管理</span>
           </el-menu-item>
@@ -29,11 +29,11 @@
           <el-menu-item index="1-2">
             <span slot="title">私有任务集</span>
           </el-menu-item>
-          <el-menu-item v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')" index="2" @click="sclass">
+          <el-menu-item v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')" index="2"  route="task">
             <i class="el-icon-menu"></i>
             <span slot="title">任务管理</span>
           </el-menu-item>
-          <el-menu-item v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')" index="3" @click="toGroup">
+          <el-menu-item v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')" index="3"  route="group">
             <i class="el-icon-menu"></i>
             <span slot="title">班级管理</span>
           </el-menu-item>
@@ -41,43 +41,9 @@
       </el-aside>
 
       <el-main>
-        <div v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')">
-          <el-button type="primary" @click="dialogTaskVisible = true">创建任务集</el-button>
-          <el-table :data="commontask" @row-dblclick="handleClassClick">
-            <el-table-column prop="id" label="id" width="120"></el-table-column>
-            <el-table-column prop="name" label="姓名"></el-table-column>
-            <el-table-column prop="type" label="类型"></el-table-column>
-            <el-table-column label="操作">
-              <template slot-scope="scope">
-                <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-                <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-                <el-button size="mini" type="danger" @click="handlelose(scope.$index, scope.row)">关闭
-                </el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-        </div>
-
-        <div v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')&&classt">
-          <el-button type="primary" @click="dialogFormVisible = true">创建任务</el-button>
-          <el-table :data="commontask" @row-dblclick="handleClassClick">
-            <el-table-column prop="id" label="id" width="120"></el-table-column>
-            <el-table-column prop="name" label="名称"></el-table-column>
-            <el-table-column prop="description" label="描述"></el-table-column>
-
-            <el-table-column prop="type" label="状态"></el-table-column>
-            <el-table-column label="操作">
-              <template slot-scope="scope">
-                <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-                <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-                <el-button size="mini" type="danger" @click="handlelose(scope.$index, scope.row)">关闭</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-        </div>
-<!--        班级管理-->
+        <!--        班级管理-->
         <div v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')&&classes">
-          <el-button type="primary" @click="dialogFormVisible = true">创建班级</el-button>
+          <el-button type="primary" @click="dialogFormVisible = true" style="margin-left: -1200px">创建班级</el-button>
           <el-table :data="tableData2" @row-dblclick="handleClassClick">
             <el-table-column prop="name" label="班级名称" width="120">
             </el-table-column>
@@ -85,7 +51,6 @@
             </el-table-column>
             <el-table-column prop="invite_code" label="邀请码">
             </el-table-column>
-            <el-table-column prop="type" label="状态"></el-table-column>
             <el-table-column label="操作">
               <template slot-scope="scope">
                 <el-button
@@ -113,38 +78,56 @@
         </div>
       </el-main>
     </el-container>
-    <el-dialog title="创建任务集" :visible.sync="dialogTaskVisible">
-      <el-form :model="createtask">
-        <el-form-item :rules="[{ required: true, message: '任务集名称不能为空' }]" label="任务集名称" :label-width="formLabelWidth">
-          <el-input v-model="createtask.name" autocomplete="off"></el-input>
+    <el-dialog title="创建班级" :visible.sync="dialogFormVisible">
+      <el-form :model="createGroup">
+        <el-form-item :rules="[{ required: true, message: '班级名称不能为空' }]" label="班级名称" :label-width="formLabelWidth">
+          <el-input v-model="createGroup.name" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item :rules="[{ required: true, message: '任务集不能为空' }]" label="任务集描述" :label-width="formLabelWidth">
-          <el-select v-model="createtask.type" placeholder="请选择">
-            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
-          </el-select>
+        <el-form-item :rules="[{ required: true, message: '班级描述不能为空' }]" label="班级描述" :label-width="formLabelWidth">
+          <el-input v-model="createGroup.description" autocomplete="off"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogTaskVisible = false">取 消</el-button>
-        <el-button type="primary" @click="createTask">确 定</el-button>
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="creategroup">确 定</el-button>
+      </div>
+    </el-dialog>
+    <el-dialog title="修改班级" :visible.sync="dialogFormVisible1">
+      <el-form :model="createGroup">
+        <el-form-item :rules="[{ required: true, message: '班级名称不能为空' }]" label="班级名称" :label-width="formLabelWidth">
+          <el-input v-model="createGroup.name" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item :rules="[{ required: true, message: '班级描述不能为空' }]" label="班级描述" :label-width="formLabelWidth">
+          <el-input v-model="createGroup.description" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible1 = false">取 消</el-button>
+        <el-button type="primary" @click="editgroup">确 定</el-button>
       </div>
     </el-dialog>
   </el-container>
 </template>
 <script>
 import Vue from "vue";
+
 export default {
+  inject: ['reload'],
   created() {
     this.getCommonTaskSet()
     console.log(this.$root.USER.role)
-    Vue.axios.get("http://localhost:5000/home/").then((response) => {
-      response = JSON.parse(response.request.responseText);
-      if (response.code === 200) {
-        (this.project_num = response.data.project_num),
-            (this.task_num = response.data.task_num),
-            (this.user_num = response.data.user_num);
-      }
-    });
+    Vue.axios
+        .get(
+            "http://localhost:5000/group/teacher/" + this.$root.USER.id
+        )
+        .then((response) => {
+          response = JSON.parse(response.request.responseText);
+          if (response.code === 200) {
+            console.log(response);
+            this.tableData2 = response.data.groups;
+            console.log(this.tableData2[1].name);
+          }
+        });
     this.taskt = true;
     this.classt = false;
     this.usert = false;
@@ -167,7 +150,12 @@ export default {
       project_num: 111,
       task_num: 2222,
       user_num: 33333,
-
+      createGroup:{
+        id:'',
+        name:'',
+        description:'',
+        teacher_id:''
+      },
       taskt: true,
       tasksett: false,
       classt: false,
@@ -175,6 +163,7 @@ export default {
       classes:false,
       dialogFormVisible: false,
       dialogFormVisiblec: false,
+      dialogFormVisible1: false,
       dialogTaskVisible: false,
       groupid: null,
       form: {
@@ -276,14 +265,15 @@ export default {
       this.$router.push("/editgroup/" + e.id);
     },
     handleEdit(index, row) {
-      this.form.name = row.name;
-      this.form.description = row.description;
+      this.createGroup.name = row.name;
+      this.createGroup.description = row.description;
       this.groupid = row.id;
-      this.dialogFormVisiblec = true;
+      this.dialogFormVisible1 = true;
       console.log(index, row);
     },
+
     handleDelete(index, row) {
-      this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
+      this.$confirm("此操作将永久删除该班级, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
@@ -311,7 +301,8 @@ export default {
               message: "已取消",
             });
           });
-      console.log(index, row);
+      // console.log(index, row);
+      this.reload()
     },
     handlelose(index, row) {
       this.$confirm("是否确认关闭该班级?", "提示", {
@@ -348,20 +339,35 @@ export default {
       this.$router.push("person");
     },
     editgroup() {
-      this.dialogFormVisiblec = false;
+      this.dialogFormVisible1 = false;
       this.$axios({
         method: "post",
         url: "http://localhost:5000/group/edit",
         data: {
           id: this.groupid,
-          name: this.form.name,
-          description: this.form.description,
+          name: this.createGroup.name,
+          description: this.createGroup.description,
         },
       }).then((successResponse) => {
-        this.form.name = "";
-        this.form.description = "";
+        this.createGroup.name = "";
+        this.createGroup.description = "";
         successResponse = JSON.parse(successResponse.request.responseText);
-        console.log(successResponse);
+        if(successResponse.code ===200){
+          this.$notify({
+            title: '成功',
+            message: '修改成功',
+            type: 'success',
+            duration: 2000
+          })
+        }else{
+          this.$notify({
+            title: '失败',
+            message: '修改失败',
+            type: 'warning',
+            duration: 2000
+          })
+        }
+        // console.log(successResponse);
         this.getgroup();
       });
     },
@@ -372,35 +378,32 @@ export default {
         method: "post",
         url: "http://localhost:5000/group/add",
         data: {
-          name: this.form.name,
-          description: this.form.description,
+          name: this.createGroup.name,
+          description: this.createGroup.description,
           teacher_id: this.$root.USER.id,
         },
       }).then((successResponse) => {
         this.form.name = "";
         this.form.description = "";
         successResponse = JSON.parse(successResponse.request.responseText);
+        if(successResponse.code ===200){
+          this.$notify({
+            title: '成功',
+            message: '创建成功',
+            type: 'success',
+            duration: 2000
+          })
+        }else{
+          this.$notify({
+            title: '失败',
+            message: '创建失败',
+            type: 'warning',
+            duration: 2000
+          })
+        }
         this.getgroup();
-        console.log(successResponse);
-      });
-    },
-    createTask() {
-      this.dialogTaskVisible = false;
-      this.$axios({
-        method: "post",
-        url: "http://localhost:5000/taskset/add",
-        data: {
-          name: this.createtask.name,
-          type: this.createtask.type,
-
-        },
-      }).then((successResponse) => {
-        this.createtask.name = "";
-        this.createtask.type = "";
-
-        successResponse = JSON.parse(successResponse.request.responseText);
-        this.getTaskSet();
-        console.log(successResponse);
+        // console.log(successResponse);
+        this.reload()
       });
     },
     quit() {
@@ -408,10 +411,10 @@ export default {
       this.$root.USER.email = null;
       this.$root.USER.id = null;
       this.$root.USER.confirmed = false;
-      console.log(this.$root.USER.name);
-      console.log(this.$root.USER.email);
-      console.log(this.$root.USER.id);
-      console.log(this.$root.USER.confirmed);
+      // console.log(this.$root.USER.name);
+      // console.log(this.$root.USER.email);
+      // console.log(this.$root.USER.id);
+      // console.log(this.$root.USER.confirmed);
       this.$router.push("home");
     },
     task() {
@@ -424,14 +427,14 @@ export default {
       console.log(this.taskt);
     },
     sclass() {
-      this.$router.push('/task')
+      this.$router.push('task')
     },
-    toGroup(){
-      this.$router.push('/group')
+    toClass(){
+      this.$router.push('group')
     },
-    // staskset() {
-    //   this.$router.push('/taskDB')
-    // },
+    staskset() {
+      this.$router.push('taskDB')
+    },
     handleOpen(key, keyPath) {
       console.log(key, keyPath);
     },

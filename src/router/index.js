@@ -64,5 +64,32 @@ export default new Router({
 			path: "/taskDB",
 			component: () => import("@/components/TaskDB.vue")
 		},
+		{
+			path: "/group",
+			component: () => import("@/components/Group.vue")
+		},
+		{
+			path: "/task",
+			component: () => import("@/components/Task.vue")
+		},
+		// {
+        //     path: "/index",
+        //     name: 'index',
+        //     component: () => import("@/components/index.vue"),
+        //     children: [
+        //         {
+        //             path: "/taskDB",
+        //             component: () => import("@/components/TaskDB.vue")
+        //         },
+        //         {
+        //             path: "/group",
+        //             component: () => import("@/components/Group.vue")
+        //         },
+        //         {
+        //             path: "/task",
+        //             component: () => import("@/components/Task.vue")
+        //         }
+        //     ]
+        // }
 	]
 })
