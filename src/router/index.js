@@ -45,6 +45,10 @@ export default new Router({
 			component: () => import("@/components/edittask.vue")
 		},
 		{
+			path: "/groupadmit",
+			component: () => import("@/components/GroupAdmit.vue")
+		},
+		{
 			path: "/home",
 			component: () => import("@/components/home.vue")
 		},
