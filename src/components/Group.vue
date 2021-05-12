@@ -262,7 +262,7 @@ export default {
       this.$router.push("/taskset/" + e.id + '/' + e.name);
     },
     handleClassClick(e) {
-      this.$router.push("/editgroup/" + e.id);
+      this.$router.push({path:"/editgroup/" + e.id,query:{index: e.invite_code}});
     },
     handleEdit(index, row) {
       this.createGroup.name = row.name;

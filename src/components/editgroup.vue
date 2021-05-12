@@ -44,7 +44,7 @@
 		<el-main>
       <el-button size="mini" type="primary" @click="back">返回</el-button>
 			<el-button size="mini" type="primary" @click="importstudents">一键导入学生</el-button>
-			<span>邀请码：{{this.$route.params.invite_code}}</span>
+			<span>邀请码:{{this.inviteCode}}</span>
 			<el-button size="mini" type="primary" @click="outputstudents">导出学生成绩</el-button>
 			<el-table :data="tableData">
 				<el-table-column prop="name" label="姓名">
@@ -68,10 +68,11 @@
 		data() {
 			return {
 				tableData: [],
+        inviteCode: '123',
         usert: false,
 			}
 		},
-		created() {
+		created(){
       this.taskt = true;
       this.classt = false;
       this.usert = false;
@@ -79,17 +80,22 @@
       if (this.$root.USER.name != null) {
         this.usert = true;
       }
+      this.getinviteCode();
 			Vue.axios.get('http://localhost:5000/home/').then((response) => {
 				response = JSON.parse(response.request.responseText);
 				if (response.code === 200) {
 					console.log('Connect Success')
+
 				}
 			})
 			this.getgroup();
 
 		},
+    mounted() {
+      this.getinviteCode();
+    },
 
-		methods: {
+    methods: {
 			getgroup() {
 				this.$axios({
 					method: 'get',
@@ -103,6 +109,15 @@
 					console.log(this.tableData)
 				})
 			},
+      getinviteCode(){
+        this.$axios({
+          method: "get",
+          url: "http://localhost:5000/group/invite_code/" + this.$route.params.groupid,
+        }).then((successResponse) => {
+          this.inviteCode = successResponse.data.data.invite_code
+          console.log(this.inviteCode)
+        });
+      },
 			handleDelete(index, row) {
 				this.$confirm('此操作将踢除该学生, 是否继续?', '提示', {
 					confirmButtonText: '确定',

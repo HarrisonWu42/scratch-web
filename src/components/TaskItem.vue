@@ -29,6 +29,9 @@
             </el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
+
+        <h1 class="big" style="float: left">||当前版本：{{ this.projectData.id }}</h1>
+        <el-button style="margin-right: 20px" type="primary" @click="handleBackClick">返回</el-button>
       </el-row>
       <el-avatar
         size="small"
@@ -205,13 +208,14 @@ export default {
   data() {
     return {
       url:
-        "https://cdn.theguardian.tv/webM/2015/07/20/150716YesMen_synd_768k_vp8.webm",
+        "https://github.com/hangzhouwh/paper/blob/master/video/task.mp4",
       taskData: {
         answer_video_url: "",
         description: "",
         id: null,
         name: "比尔与野兽      ",
       },
+      temp:"",
       pro:[],
       projectDetail: {},
       AllprojectDatas: [],
@@ -236,6 +240,7 @@ export default {
     };
   },
   methods: {
+
     format(percentage) {
       return `${percentage}`;
     },
@@ -338,7 +343,27 @@ export default {
         console.log(response);
       });
     },
-    handleTestClick() {},
+    handleTestClick() {
+      this.$axios({
+        method: "POST",
+        url: "http://localhost:5000/project/evaluate/" + this.projectData.id,
+      }).then((response) => {
+
+        clearTimeout(this.timer);  //清除延迟执行
+        this.timer = setTimeout(()=>{   //设置延迟执行
+          console.log('ok');
+        },20000);
+        console.log(response);
+        console.log(this.projectData)
+        this.$forceUpdate();
+        if (response.data.code === 200){
+          console.log(this.projectData)
+          this.$forceUpdate();
+          console.log(this.projectData)
+        }
+
+      });
+    },
   },
 };
 </script>
