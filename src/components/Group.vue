@@ -29,11 +29,11 @@
           <el-menu-item index="1-2" >
             <span slot="title">私有任务集</span>
           </el-menu-item>
-          <el-menu-item v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')" index="2" @click="sclass">
+          <el-menu-item v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')" index="2" @click.native="sclass">
             <i class="el-icon-menu"></i>
             <span slot="title">任务管理</span>
           </el-menu-item>
-          <el-menu-item v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')" index="3" @click="toClass">
+          <el-menu-item v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')" index="3" @click.native="toClass">
             <i class="el-icon-menu"></i>
             <span slot="title">班级管理</span>
           </el-menu-item>
@@ -114,7 +114,7 @@ import Vue from "vue";
 export default {
   inject: ['reload'],
   created() {
-    this.getCommonTaskSet()
+    // this.getCommonTaskSet()
     console.log(this.$root.USER.id)
     Vue.axios
         .get(
@@ -427,6 +427,7 @@ export default {
       console.log(this.taskt);
     },
     sclass() {
+
       this.$router.push('task')
     },
     toClass(){

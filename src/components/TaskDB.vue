@@ -29,11 +29,11 @@
           <el-menu-item index="1-2">
             <span slot="title">私有任务集</span>
           </el-menu-item>
-          <el-menu-item v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')" index="2" @click="sclass">
+          <el-menu-item v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')" index="2" @click.native="sclass">
             <i class="el-icon-menu"></i>
             <span slot="title">任务管理</span>
           </el-menu-item>
-          <el-menu-item v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')" index="3" @click="toGroup">
+          <el-menu-item v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')" index="3" @click.native="toGroup">
             <i class="el-icon-menu"></i>
             <span slot="title">班级管理</span>
           </el-menu-item>
