@@ -19,14 +19,14 @@
     <el-container>
       <el-aside width="200px">
         <el-menu style="margin: 10px">
-          <el-menu-item v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')" index="1" @click="getPrivateTasket">
+          <el-menu-item v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')" index="1" @click="getCommonTaskSet">
             <i class="el-icon-menu"></i>
             <span slot="title">任务集管理</span>
           </el-menu-item>
           <el-menu-item index="1-1" @click="getCommonTaskSet">
             <span slot="title">固定任务集</span>
           </el-menu-item>
-          <el-menu-item index="1-2" >
+          <el-menu-item index="1-2" @click="getLimitTaskSet">
             <span slot="title">私有任务集</span>
           </el-menu-item>
           <el-menu-item v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')" index="2" @click.native="sclass">
@@ -135,7 +135,9 @@ export default {
     this.classt = false;
     this.usert = false;
     this.classes=false;
-
+    if (this.$root.USER.name != null) {
+      this.usert = true;
+    }
   },
   data() {
     return {
@@ -453,6 +455,9 @@ export default {
     getCommonTaskSet() {
       this.$router.push('taskDB')
     },
+    getLimitTaskSet(){
+      this.$router.push('taskLimit')
+    },
     handleOpen(key, keyPath) {
       console.log(key, keyPath);
     },
@@ -484,9 +489,9 @@ export default {
 }
 
 * {
-  --tw-ring-inset: var(--tw-empty, /*!*/ /*!*/);
+  /*--tw-ring-inset: var(--tw-empty, !*!*! !*!*!);*/
   --tw-ring-offset-width: 0px;
-  --tw-ring-offset-color: var(--text-normal);
+  /*--tw-ring-offset-color: var(--text-normal);*/
   --tw-ring-color: rgba(147, 197, 253, 0.5);
   --tw-ring-offset-shadow: 0 0 #0000;
   --tw-ring-shadow: 0 0 #0000;

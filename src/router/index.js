@@ -37,7 +37,7 @@ export default new Router({
 			component: () => import("@/components/auth/confirm.vue")
 		},
 		{
-			path: "/editgroup/:groupid/",
+			path: "/editgroup/:groupid",
 			component: () => import("@/components/editgroup.vue")
 		},
 		{
@@ -63,6 +63,10 @@ export default new Router({
 		{
 			path: "/taskDB",
 			component: () => import("@/components/TaskDB.vue")
+		},
+		{
+			path: "/taskLimit",
+			component: () => import("@/components/TaskLimit.vue")
 		},
 		{
 			path: "/group",

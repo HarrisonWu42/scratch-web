@@ -138,6 +138,7 @@
             <el-button size="small" type="primary" @click="handleTestClick"
               >测评</el-button
             >
+            <el-button size="small" type="primary" @click="handleEdit()">老师评分</el-button>
           </el-row>
         </el-col>
       </el-row>
@@ -172,12 +173,32 @@
         >
       </el-row> -->
     </el-main>
+
+    <el-dialog title="评价" :visible.sync="dialogFormVisible1">
+      <el-form :model="projectData">
+        <el-form-item :rules="[{ required: true, message: '评价星级不能为空' }]" label="评价星级" :label-width="formLabelWidth">
+          <el-input v-model="projectData.score" ></el-input>
+        </el-form-item>
+        <el-form-item :rules="[{ required: true, message: '评价不能为空' }]" label="老师评价" :label-width="formLabelWidth">
+          <el-input v-model="projectData.comment" ></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible1 = false">取 消</el-button>
+        <el-button type="primary" @click="editgroup()">确 定</el-button>
+      </div>
+      <!--      <div slot="footer" class="dialog-footer">-->
+      <!--        <el-button @click="dialogFormVisible1 = false">取 消</el-button>-->
+      <!--        <el-button type="primary" @click="editgroup">确 定</el-button>-->
+      <!--      </div>-->
+    </el-dialog>
   </el-container>
 </template>
 <script>
 export default {
   name: "TaskItem",
   created() {
+    this.getTaskAllProjectDatas()
     this.getTaskItemData();
     this.getTaskProjectsData();
   },
@@ -191,6 +212,9 @@ export default {
         id: null,
         name: "比尔与野兽      ",
       },
+      pro:[],
+      projectDetail: {},
+      AllprojectDatas: [],
       projects: [
         {
           commit_timestamp: null,
@@ -199,14 +223,16 @@ export default {
         },
       ],
       projectData: {
-        comment: "暂无评价",
-        complexity: 1,
-        id: 1,
-        logicality: 1,
-        name: "作品",
-        score: 5,
-        workload: 1,
+        comment: "暂无评论，请选择版本",
+        complexity: 0,
+        id: 0,
+        logicality: 0,
+        name: "暂无作品",
+        score: 0,
+        workload: 0,
       },
+      formLabelWidth: "120px",
+      dialogFormVisible1:false
     };
   },
   methods: {
@@ -215,6 +241,9 @@ export default {
     },
     handleBackClick() {
       this.$router.back();
+    },
+    handleEdit(){
+      this.dialogFormVisible1=true
     },
     getTaskItemData() {
       this.$axios({
@@ -236,12 +265,49 @@ export default {
         this.projects = response.data.data.projects;
       });
     },
+    getTaskAllProjectDatas(){
+      this.$axios({
+        method: "get",
+        url: "http://localhost:5000/task/project/" +this.$root.USER.id+"/"+ this.taskData.id,
+      }).then((response) => {
+        this.AllprojectDatas = response.data.data;
+      });
+    },
     getTaskProjectData(projectId) {
       this.$axios({
         method: "get",
         url: "http://localhost:5000/project/" + projectId,
       }).then((response) => {
         this.projectData = response.data.data;
+      });
+    },
+    editgroup(){
+      this.dialogFormVisible1 = false;
+      this.$axios({
+        method: "post",
+        url: "http://localhost:5000/project/evaluate-correct",
+        data: {
+          id: this.projectData.id,
+          score: this.projectData.score,
+          comment: this.projectData.comment,
+        },
+      }).then((successResponse) => {
+        successResponse = JSON.parse(successResponse.request.responseText);
+        if (successResponse.code === 200) {
+          this.$notify({
+            title: '成功',
+            message: '修改成功',
+            type: 'success',
+            duration: 2000
+          })
+        } else {
+          this.$notify({
+            title: '失败',
+            message: '修改失败',
+            type: 'warning',
+            duration: 2000
+          })
+        }
       });
     },
     handleClick() {

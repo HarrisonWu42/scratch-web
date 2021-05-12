@@ -26,7 +26,7 @@
           <el-menu-item index="1-1" @click="getCommonTaskSet">
             <span slot="title">固定任务集</span>
           </el-menu-item>
-          <el-menu-item index="1-2" >
+          <el-menu-item index="1-2" @click="getLimitTaskSet">
             <span slot="title">私有任务集</span>
           </el-menu-item>
           <el-menu-item v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')" index="2" @click.native="sclass">
@@ -438,6 +438,9 @@ export default {
     },
     getCommonTaskSet() {
       this.$router.push('taskDB')
+    },
+    getLimitTaskSet(){
+      this.$router.push('taskLimit')
     },
     handleOpen(key, keyPath) {
       console.log(key, keyPath);

@@ -43,7 +43,7 @@
       <el-main>
         <div v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')">
           <el-button type="primary" @click="dialogTaskVisible = true">创建任务集</el-button>
-          <el-table :data="commontask" @row-dblclick="handleClassClick">
+          <el-table :data="limittask" @row-dblclick="handleClassClick">
             <el-table-column prop="id" label="id" width="120"></el-table-column>
             <el-table-column prop="name" label="姓名"></el-table-column>
             <el-table-column prop="type" label="类型"></el-table-column>
@@ -60,7 +60,7 @@
 
         <div v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')&&classt">
           <el-button type="primary" @click="dialogFormVisible = true">创建任务</el-button>
-          <el-table :data="commontask" @row-dblclick="handleClassClick">
+          <el-table :data="limittask" @row-dblclick="handleClassClick">
             <el-table-column prop="id" label="id" width="120"></el-table-column>
             <el-table-column prop="name" label="名称"></el-table-column>
             <el-table-column prop="description" label="描述"></el-table-column>
@@ -75,7 +75,7 @@
             </el-table-column>
           </el-table>
         </div>
-<!--        班级管理-->
+        <!--        班级管理-->
         <div v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')&&classes">
           <el-button type="primary" @click="dialogFormVisible = true">创建班级</el-button>
           <el-table :data="tableData2" @row-dblclick="handleClassClick">
@@ -135,7 +135,7 @@
 import Vue from "vue";
 export default {
   created() {
-    this.getCommonTaskSet()
+    this.getLimitTaskSet()
     console.log(this.$root.USER.role)
     Vue.axios.get("http://localhost:5000/home/").then((response) => {
       response = JSON.parse(response.request.responseText);
@@ -160,6 +160,7 @@ export default {
   data() {
     return {
       commontask: [],
+      limittask: [],
       all: 10, //总页数
       cur: 1, //当前页码
       totalPage: 0, //当前条数
@@ -444,18 +445,24 @@ export default {
     gotoregister() {
       this.$router.push("register");
     },
-    getLimitTaskSet(){
-      this.$router.push('taskLimit')
-    },
     // 查询固定任务集（题库）
     getCommonTaskSet() {
+      this.$router.push('taskDB')
+      // this.$axios({
+      //   method: "get",
+      //   url: "http://localhost:5000/taskset/common/1/5",
+      // }).then((successResponse) => {
+      //   this.commontask = successResponse.data.data.tasksets
+      // });
+    },
+    getLimitTaskSet(){
       this.$axios({
-        method: "get",
-        url: "http://localhost:5000/taskset/common/1/5",
-      }).then((successResponse) => {
-        this.commontask = successResponse.data.data.tasksets
-      });
-    }
+         method: "get",
+         url: "http://localhost:5000/taskset/private/" + this.$root.USER.id +"/1/5",
+       }).then((successResponse) => {
+         this.limittask = successResponse.data.data.tasksets
+       });
+    },
   },
 };
 </script>
