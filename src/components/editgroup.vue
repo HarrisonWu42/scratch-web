@@ -46,6 +46,7 @@
 			<el-button size="mini" type="primary" @click="importstudents">一键导入学生</el-button>
 			<span>邀请码:{{this.inviteCode}}</span>
 			<el-button size="mini" type="primary" @click="outputstudents">导出学生成绩</el-button>
+      <el-button size="mini" type="primary" @click="divideTask">授权</el-button>
 			<el-table :data="tableData">
 				<el-table-column prop="name" label="姓名">
 				</el-table-column>
@@ -109,6 +110,9 @@
 					console.log(this.tableData)
 				})
 			},
+      divideTask(){
+        this.$router.push({path:"../groupadmit",query:{groupId:this.$route.params.groupid}});
+      },
       getinviteCode(){
         this.$axios({
           method: "get",
@@ -149,19 +153,19 @@
 				console.log(index, row);
 			},
       getCommonTaskSet() {
-        this.$router.push('taskDB')
+        this.$router.push('../taskDB')
       },
       getLimitTaskSet(){
-        this.$router.push('taskLimit')
+        this.$router.push('../taskLimit')
       },
       sclass() {
-        this.$router.push('task')
+        this.$router.push('../task')
       },
       toGroup(){
-        this.$router.push('/group')
+        this.$router.push('../group')
       },
       back(){
-        this.$router.push('/group')
+        this.$router.push('../group')
       },
       person() {
         this.$router.push("person");
