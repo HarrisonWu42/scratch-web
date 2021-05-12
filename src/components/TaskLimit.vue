@@ -51,66 +51,11 @@
               <template slot-scope="scope">
                 <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
                 <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-                <el-button size="mini" type="danger" @click="handlelose(scope.$index, scope.row)">关闭
-                </el-button>
               </template>
             </el-table-column>
           </el-table>
         </div>
 
-        <div v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')&&classt">
-          <el-button type="primary" @click="dialogFormVisible = true">创建任务</el-button>
-          <el-table :data="limittask" @row-dblclick="handleClassClick">
-            <el-table-column prop="id" label="id" width="120"></el-table-column>
-            <el-table-column prop="name" label="名称"></el-table-column>
-            <el-table-column prop="description" label="描述"></el-table-column>
-
-            <el-table-column prop="type" label="状态"></el-table-column>
-            <el-table-column label="操作">
-              <template slot-scope="scope">
-                <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-                <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-                <el-button size="mini" type="danger" @click="handlelose(scope.$index, scope.row)">关闭</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-        </div>
-        <!--        班级管理-->
-        <div v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')&&classes">
-          <el-button type="primary" @click="dialogFormVisible = true">创建班级</el-button>
-          <el-table :data="tableData2" @row-dblclick="handleClassClick">
-            <el-table-column prop="name" label="班级名称" width="120">
-            </el-table-column>
-            <el-table-column prop="description" label="班级描述">
-            </el-table-column>
-            <el-table-column prop="invite_code" label="邀请码">
-            </el-table-column>
-            <el-table-column prop="type" label="状态"></el-table-column>
-            <el-table-column label="操作">
-              <template slot-scope="scope">
-                <el-button
-                    size="mini"
-                    @click="handleEdit(scope.$index, scope.row)"
-                >编辑
-                </el-button
-                >
-                <el-button
-                    size="mini"
-                    type="danger"
-                    @click="handleDelete(scope.$index, scope.row)"
-                >
-                  删除
-                </el-button>
-                <!--                <el-button-->
-                <!--                    size="mini"-->
-                <!--                    type="danger"-->
-                <!--                    @click="handlelose(scope.$index, scope.row)"-->
-                <!--                >关闭-->
-                <!--                </el-button>-->
-              </template>
-            </el-table-column>
-          </el-table>
-        </div>
       </el-main>
     </el-container>
     <el-dialog title="创建任务集" :visible.sync="dialogTaskVisible">
@@ -129,6 +74,19 @@
         <el-button type="primary" @click="createTask">确 定</el-button>
       </div>
     </el-dialog>
+
+    <el-dialog title="修改任务集" :visible.sync="dialogFormVisiblec">
+      <el-form :model="form">
+        <el-form-item :rules="[{ required: true, message: '班级名称不能为空' }]" label="名称" :label-width="formLabelWidth">
+          <el-input v-model="form.name" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisiblec = false">取 消</el-button>
+        <el-button type="primary" @click="editgroup">确 定</el-button>
+      </div>
+    </el-dialog>
+
   </el-container>
 </template>
 <script>
@@ -180,7 +138,7 @@ export default {
       groupid: null,
       form: {
         name: "",
-        description: "",
+        type: "0",
       },
       formLabelWidth: "120px",
       //创建任务
@@ -242,21 +200,21 @@ export default {
       //根据点击页数请求数据
       this.dataListFn(this.cur.toString());
     },
-    getgroup() {
-      //在需要重新获取班级信息的地方调用
-      Vue.axios
-          .get(
-              "http://localhost:5000/group/teacher/" + this.$root.USER.id
-          )
-          .then((response) => {
-            response = JSON.parse(response.request.responseText);
-            if (response.code === 200) {
-              console.log(response);
-              this.tableData2 = response.data.groups;
-              console.log(this.tableData2[1].name);
-            }
-          });
-    },
+    // getgroup() {
+    //   //在需要重新获取班级信息的地方调用
+    //   Vue.axios
+    //       .get(
+    //           "http://localhost:5000/group/teacher/" + this.$root.USER.id
+    //       )
+    //       .then((response) => {
+    //         response = JSON.parse(response.request.responseText);
+    //         if (response.code === 200) {
+    //           console.log(response);
+    //           this.tableData2 = response.data.groups;
+    //           console.log(this.tableData2[1].name);
+    //         }
+    //       });
+    // },
     getTaskSet() {
       //在需要重新获取班级信息的地方调用
       Vue.axios
@@ -278,8 +236,9 @@ export default {
     },
     handleEdit(index, row) {
       this.form.name = row.name;
-      this.form.description = row.description;
-      this.groupid = row.id;
+      this.form.id = row.id;
+      this.form.type= 0;
+      this.form.teacher_id = row.teacher_id;
       this.dialogFormVisiblec = true;
       console.log(index, row);
     },
@@ -292,14 +251,14 @@ export default {
           .then(() => {
             this.$axios({
               method: "post",
-              url: "http://localhost:5000/group/delete",
+              url: "http://localhost:5000/taskset/delete",
               data: {
                 id: row.id,
               },
             }).then((successResponse) => {
               successResponse = JSON.parse(successResponse.request.responseText);
               console.log(successResponse);
-              this.getgroup();
+              this.getLimitTaskSet();
             });
             this.$message({
               type: "success",
@@ -314,78 +273,48 @@ export default {
           });
       console.log(index, row);
     },
-    handlelose(index, row) {
-      this.$confirm("是否确认关闭该班级?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
-      })
-          .then(() => {
-            this.$axios({
-              method: "post",
-              url: "http://localhost:5000/group/close",
-              data: {
-                id: row.id,
-              },
-            }).then((successResponse) => {
-              successResponse = JSON.parse(successResponse.request.responseText);
-              console.log(successResponse);
-              this.getgroup();
-            });
-            this.$message({
-              type: "success",
-              message: "关闭成功!",
-            });
-          })
-          .catch(() => {
-            this.$message({
-              type: "info",
-              message: "已取消",
-            });
-          });
-      console.log(index, row);
-    },
     person() {
       this.$router.push("person");
+    },
+    getCommonTaskSet(){
+      this.$router.push('taskDB')
     },
     editgroup() {
       this.dialogFormVisiblec = false;
       this.$axios({
         method: "post",
-        url: "http://localhost:5000/group/edit",
+        url: "http://localhost:5000/taskset/edit",
         data: {
-          id: this.groupid,
+          id: this.form.id,
           name: this.form.name,
-          description: this.form.description,
+          type: this.form.type,
         },
       }).then((successResponse) => {
-        this.form.name = "";
-        this.form.description = "";
         successResponse = JSON.parse(successResponse.request.responseText);
         console.log(successResponse);
-        this.getgroup();
+        this.getLimitTaskSet();
       });
     },
-    creategroup() {
-      this.dialogFormVisible = false;
-      console.log(this.$root.USER.id);
-      this.$axios({
-        method: "post",
-        url: "http://localhost:5000/group/add",
-        data: {
-          name: this.form.name,
-          description: this.form.description,
-          teacher_id: this.$root.USER.id,
-        },
-      }).then((successResponse) => {
-        this.form.name = "";
-        this.form.description = "";
-        successResponse = JSON.parse(successResponse.request.responseText);
-        this.getgroup();
-        console.log(successResponse);
-      });
-    },
-    createTask() {
+    // creategroup() {
+    //   this.dialogFormVisible = false;
+    //   console.log(this.$root.USER.id);
+    //   this.$axios({
+    //     method: "post",
+    //     url: "http://localhost:5000/group/add",
+    //     data: {
+    //       name: this.form.name,
+    //       description: this.form.description,
+    //       teacher_id: this.$root.USER.id,
+    //     },
+    //   }).then((successResponse) => {
+    //     this.form.name = "";
+    //     this.form.description = "";
+    //     successResponse = JSON.parse(successResponse.request.responseText);
+    //     this.getgroup();
+    //     console.log(successResponse);
+    //   });
+    // },
+    createTask() { //创建时无法填写teacher_id
       this.dialogTaskVisible = false;
       this.$axios({
         method: "post",
@@ -430,9 +359,7 @@ export default {
     toGroup(){
       this.$router.push('/group')
     },
-    // staskset() {
-    //   this.$router.push('/taskDB')
-    // },
+
     handleOpen(key, keyPath) {
       console.log(key, keyPath);
     },
@@ -445,16 +372,7 @@ export default {
     gotoregister() {
       this.$router.push("register");
     },
-    // 查询固定任务集（题库）
-    getCommonTaskSet() {
-      this.$router.push('taskDB')
-      // this.$axios({
-      //   method: "get",
-      //   url: "http://localhost:5000/taskset/common/1/5",
-      // }).then((successResponse) => {
-      //   this.commontask = successResponse.data.data.tasksets
-      // });
-    },
+
     getLimitTaskSet(){
       this.$axios({
          method: "get",
