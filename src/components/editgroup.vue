@@ -42,15 +42,65 @@
 
 
 		<el-main>
-      <div style="float: left">
+      <div style="float: left;display : inline-block;width: 100%">
         <el-page-header @back="back" ></el-page-header>
         <br>
-        <el-button @click="back">邀请码:{{this.inviteCode}}</el-button>
-        <el-button type="primary" @click="importstudents">一键导入学生</el-button>
-        <el-button type="primary" @click="outputstudents">导出学生成绩</el-button>
-        <el-button type="primary" @click="divideTask">授权</el-button>
+        <el-button @click="back" style="float: left">邀请码:{{this.inviteCode}}</el-button>
+
+        <el-row style="float: left;margin-left: 20px">
+        <input
+            v-show="false"
+            id="uploadFileInput"
+            type="file"
+            @change="handleFileUpdate"
+            accept=".xlsx, .xls"
+
+        />
+        <el-button type="primary" @click="handleUploadClick"
+        >一键导入学生</el-button>
+          </el-row>
+<!--        <el-upload-->
+<!--            action-->
+<!--            accept=".xlsx, .xls"-->
+<!--            :auto-upload="false"-->
+<!--            :show-file-list="false"-->
+<!--            :on-change="handle"-->
+
+<!--            :visible.sync="dialogTaskVisible"-->
+<!--            style="float: left;margin-left: 20px"-->
+<!--        >-->
+<!--          <el-button type="primary" slot="trigger" @click="handleUploadClick" >一键导入学生</el-button>-->
+<!--        </el-upload>-->
+<!--        <el-button type="primary" slot="trigger" @click="dialogTaskVisible=true">一键导入学生</el-button>-->
+
+        <template>
+          <div style="float: left;margin-left: 20px">
+            <el-button type="primary" @click="downExcel">导出学生成绩</el-button>
+            <iframe frameborder="0" name="downExcel" style="display:none"></iframe>
+          </div>
+        </template>
+
+<!--        <el-row  slot-scope="scope">-->
+<!--          <el-button type="primary" @click="handleExport(scope.row)" style="float: left;margin-left: 20px" >导出学生成绩</el-button>-->
+<!--        </el-row>-->
+
+        <el-button type="primary" @click="divideTask" style="float: left;margin-left: 20px">授权</el-button>
       </div>
 
+
+
+<!--      <el-upload-->
+<!--          action-->
+<!--          accept=".xlsx, .xls"-->
+<!--          :auto-upload="false"-->
+<!--          :show-file-list="false"-->
+<!--          :on-change="handle"-->
+
+<!--          :visible.sync="dialogTaskVisible"-->
+<!--      >-->
+<!--        <el-button type="primary" slot="trigger" @click="dialogTaskVisible=true">一键导入学生</el-button>-->
+<!--      </el-upload>-->
+<!--      <el-button type="primary" @click="exportExcel">导出学生成绩</el-button>-->
 			<el-table :data="tableData">
 				<el-table-column prop="name" label="姓名">
 				</el-table-column>
@@ -67,14 +117,22 @@
 	</el-container>
 </template>
 
+
 <script>
-	import Vue from 'vue'
+import {readFile,character} from "../assets/lib/utils";
+import xlsx from 'xlsx';
+import Vue from 'vue';
+
 	export default {
 		data() {
 			return {
+        fileList: [{name: '', url: ''}],
 				tableData: [],
+        show:false,
         inviteCode: '123',
         usert: false,
+        dialogTaskVisible:false,
+
 			}
 		},
 		created(){
@@ -100,11 +158,81 @@
       this.getinviteCode();
     },
 
-    methods: {
+    methods: {//导出
+      downExcel() {
+        let iframe = window.frames['downExcel'];
+        //console.log('iframe',iframe.location.href);
+        let href = 'http://localhost:5000/group/output_excel/'+this.$route.query.groupid;//接口路径地址，返回数据类型为application/binary，后台控制显示信息，前端仅为下载功能
+        iframe.location.href = href
+      },
+
+      formatJson(filterVal, jsonData) {
+        return jsonData.map(v => filterVal.map(j => v[j]))
+      },
+
+      handleUploadClick() {
+        document.getElementById("uploadFileInput").click();
+
+      },
+      handleFileUpdate(e) {
+        const file = e.target.files[0];
+        const formData = new FormData();
+        formData.append("user_id", this.$root.USER.id);
+        formData.append("task_id", this.$route.params.taskid);
+        formData.append("file", file, file.name);
+        this.$axios({
+          method: "post",
+          url: "http://localhost:5000/group/import_excel/"+this.$route.query.groupid,
+          data: formData,
+
+        }).then((response) => {
+          console.log(response);
+          this.getgroup();
+        });
+
+      },
+
+
+      async handle(ev){
+        let file = ev.raw;
+        if (!file) return;
+
+        //读取FILE中的数据(变为json)
+        let data = await readFile(file);
+        let workbook = xlsx.read(data,{type:"binary"}),
+          worksheet = workbook.Sheets[workbook.SheetNames[0]];
+        data = xlsx.utils.sheet_to_json(worksheet);
+
+        //把读取出来的数据变为最后可以传递给服务器的数据(姓名：name，邮箱：mail)
+        let arr=[];
+        data.forEach(item =>{
+          let obj={};
+          for (let key in character){
+            // if(!character.hasOwnProperty(key)) break;
+            let v=character[key],
+                text=v.text,
+                type=v.type;
+            v=item[text]||"";
+            type==="string"?(v=String(v)):null;
+            type==="number"?(v=Number(v)):null;
+            obj[key] = v;
+          }
+          arr.push(obj);
+
+        })
+        this.tableData = arr;
+        console.log(arr);
+      },
+
+
+
+
+
+
 			getgroup() {
 				this.$axios({
 					method: 'get',
-					url: 'http://localhost:5000/group/' + this.$route.params.groupid + '/1/5',
+					url: 'http://localhost:5000/group/' + this.$route.params.groupid + '/1/100',
 				}).then(successResponse => {
 					successResponse = JSON.parse(successResponse.request.responseText);
 					console.log(successResponse)

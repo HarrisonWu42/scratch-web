@@ -7,9 +7,9 @@
     </el-header>
     <el-card class="card">
         <div>
-            <p>Welcome to ScratchAi!</p>
-            <p>请点击下面的按钮，确认注册</p>
-            <p><el-button type="primary" @click="onSubmit">确认</el-button></p>
+            <p style="margin-left: 500px">Welcome to ScratchAi!</p>
+            <p style="margin-left: 500px">请点击下面的按钮，确认注册</p>
+            <p><el-button type="primary" @click="onSubmit" style="margin-left: 500px">确认</el-button></p>
         </div>
     </el-card>
     </el-container>
@@ -33,8 +33,11 @@ import Vue from "vue";
                 console.log(this.token);
                  Vue.axios.get("http://localhost:5000/auth/confirm/" + this.$route.params.usercode).then((response) => {
                     console.log(response);
-                   
                 });
+              // setTimeout(function () {
+              //   this.$router.push('../../home')
+              // }, 1000)
+              this.$router.push('../../home')
             },
         }
     }

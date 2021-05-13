@@ -80,6 +80,10 @@ export default new Router({
 			path: "/task",
 			component: () => import("@/components/Task.vue")
 		},
+		{
+			path: "/editpwd",
+			component: () => import("@/components/editpwd.vue")
+		}
 		// {
         //     path: "/index",
         //     name: 'index',

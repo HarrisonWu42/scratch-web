@@ -135,6 +135,13 @@
             <el-button size="small" type="primary" @click="handleUploadClick"
               >点击上传</el-button
             >
+<!--            <template>-->
+<!--              <div style="float: left;margin-left: 20px">-->
+<!--                <el-button type="primary" @click="downExcel">下载</el-button>-->
+<!--                <iframe frameborder="0" name="downExcel" style="display:none"></iframe>-->
+<!--              </div>-->
+<!--            </template>-->
+
             <el-button size="small" type="primary" @click="handleDownloadClick"
               >下载</el-button
             >
@@ -198,6 +205,7 @@
   </el-container>
 </template>
 <script>
+import { saveAs } from 'file-saver';
 export default {
   name: "TaskItem",
   created() {
@@ -208,7 +216,8 @@ export default {
   data() {
     return {
       url:
-        "https://github.com/hangzhouwh/paper/blob/master/video/task.mp4",
+        "https://player.youku.com/embed/XNTE1MzgzODY2MA==",
+
       taskData: {
         answer_video_url: "",
         description: "",
@@ -240,7 +249,12 @@ export default {
     };
   },
   methods: {
-
+    // downExcel() {
+    //   let iframe = window.frames['downsb3'];
+    //   //console.log('iframe',iframe.location.href);
+    //   let href = "http://localhost:5000/project/download/" + this.projectData.id;//接口路径地址，返回数据类型为application/binary，后台控制显示信息，前端仅为下载功能
+    //   iframe.location.href = href
+    // },
     format(percentage) {
       return `${percentage}`;
     },
@@ -295,6 +309,7 @@ export default {
           id: this.projectData.id,
           score: this.projectData.score,
           comment: this.projectData.comment,
+
         },
       }).then((successResponse) => {
         successResponse = JSON.parse(successResponse.request.responseText);
@@ -335,12 +350,31 @@ export default {
         console.log(response);
       });
     },
-    handleDownloadClick() {
+    async handleDownloadClick() {
       this.$axios({
         method: "get",
         url: "http://localhost:5000/project/download/" + this.projectData.id,
       }).then((response) => {
         console.log(response);
+        //使用Blob构造函数转换
+        const blob = new Blob([response.data], { type: 'blob' });
+        //文件后缀一定要加上哦
+        const fileName = 'whh.sb3';
+        saveAs(blob, fileName);
+        this.$message({
+          type: "success",
+          message: "下载成功!",
+        });
+        // const link = document.createElement('a')
+        // link.click()
+        // window.location.href=this.url
+          // let link = document.createElement("a");
+          // link.style.display = "none";
+          // link.href = this.url;
+          // link.setAttribute("download", "考勤导入模版.xlsx");
+          //
+          // document.body.appendChild(link);
+          // link.click();
       });
     },
     handleTestClick() {

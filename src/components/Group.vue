@@ -146,7 +146,7 @@ export default {
       all: 10, //总页数
       cur: 1, //当前页码
       totalPage: 0, //当前条数
-
+      groupname: null,
       project_num: 111,
       task_num: 2222,
       user_num: 33333,
@@ -262,7 +262,7 @@ export default {
       this.$router.push("/taskset/" + e.id + '/' + e.name);
     },
     handleClassClick(e) {
-      this.$router.push({path:"/editgroup/" + e.id,query:{index: e.invite_code}});
+      this.$router.push({path:"/editgroup/" + e.id,query:{index: e.invite_code, groupid: e.id ,groupname: e.name}});
     },
     handleEdit(index, row) {
       this.createGroup.name = row.name;
