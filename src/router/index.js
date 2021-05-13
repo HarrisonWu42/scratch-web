@@ -61,6 +61,10 @@ export default new Router({
 			component: () => import("@/components/TaskItem.vue")
 		},
 		{
+			path: "/tasksetNew/:tasksetid/taskall",
+			component: () => import("@/components/TasksetTask.vue")
+		},
+		{
 			path: "/auth/confirm/:token",
 			component: () => import("@/components/confirm.vue")
 		},
