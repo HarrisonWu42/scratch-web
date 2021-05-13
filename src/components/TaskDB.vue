@@ -127,7 +127,7 @@ export default {
       project_num: 111,
       task_num: 2222,
       user_num: 33333,
-
+      teacher_id: {},
       taskt: true,
       tasksett: false,
       classt: false,
@@ -152,10 +152,10 @@ export default {
       },
       options: [{
         value: '0',
-        label: '个人题目集'
+        label: '私有任务集'
       }, {
         value: '1',
-        label: '固定题目集'
+        label: '固定任务集'
       }],
       tableData: [],
       tableData2: [],
@@ -163,6 +163,9 @@ export default {
     };
   },
   methods: {
+    handleClassClick(row){
+      this.$router.push({path:'tasksetNew/'+row.id+'/taskall',query:{tasksetName : row.name,tasksetid:row.id}})
+    },
     back() {
       this.$router.push('main')
     },
@@ -320,6 +323,7 @@ export default {
           // id:this.$root.USER.id,
           name: this.createtask.name,
           type: this.createtask.type,
+          teacher_id: this.$root.USER.id
           // teacher_id: this.$root.USER.id,
         },
       }).then((successResponse) => {
@@ -327,7 +331,7 @@ export default {
         this.createtask.type = "";
 
         successResponse = JSON.parse(successResponse.request.responseText);
-        this.getTaskSet();
+        this.getCommonTaskSet();
         console.log(successResponse);
       });
     },
@@ -379,7 +383,7 @@ export default {
     getCommonTaskSet() {
       this.$axios({
         method: "get",
-        url: "http://localhost:5000/taskset/common/1/5",
+        url: "http://localhost:5000/taskset/common/1/20",
       }).then((successResponse) => {
         this.commontask = successResponse.data.data.tasksets
       });

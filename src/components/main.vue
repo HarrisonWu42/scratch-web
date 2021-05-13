@@ -358,7 +358,7 @@ export default {
     getTaskSet() {
       //在需要重新获取班级信息的地方调用
       Vue.axios
-          .get("http://localhost:5000/taskset/" + this.$root.USER.id + "/1/5")
+          .get("http://localhost:5000/taskset/" + this.$root.USER.id + "/1/20")
           .then((response) => {
             // response = JSON.parse(response.request.responseText);
             console.log(response);

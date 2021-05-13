@@ -43,8 +43,23 @@
       <el-main>
         <!--        任务管理-->
         <div v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')">
-          <el-button type="primary" @click="dialogFormVisible = true" style="margin-left: -1200px">创建班级</el-button>
-          <el-table :data="tableDatanew" >
+
+          <div style="float: left">
+            <br>
+            <el-button type="primary" @click="creategroup">创建任务</el-button>
+            <template>
+              <el-select v-model="Nowtaskset.id" placeholder="请选择任务集" style="margin-left: 10px">
+                <el-option v-for="item in options" :key="item.id" :label="item.id" :value="item.id">
+                  <span style="float: left">{{ item.name }}</span>
+                  <span style="float: right; color: #8492a6; font-size: 13px">
+                  <span class="el-tag el-tag--success el-tag--mini el-tag--plain">{{ item.id }}</span>
+              </span>
+                </el-option>
+              </el-select>
+            </template>
+          </div>
+
+          <el-table :data="tableDatanew">
             <el-table-column prop="name" label="任务名称" width="120">
             </el-table-column>
             <el-table-column prop="description" label="任务描述">
@@ -55,10 +70,15 @@
               <template slot-scope="scope">
                 <el-button
                     size="mini"
+                    type="primary"
+                    @click="handleAdd(scope.$index, scope.row)"
+                >分配至任务集
+                </el-button>
+                <el-button
+                    size="mini"
                     @click="handleEdit(scope.$index, scope.row)"
                 >编辑
-                </el-button
-                >
+                </el-button>
                 <el-button
                     size="mini"
                     type="danger"
@@ -78,18 +98,21 @@
         </div>
       </el-main>
     </el-container>
-    <el-dialog title="创建班级" :visible.sync="dialogFormVisible">
+    <el-dialog title="创建任务" :visible.sync="dialogFormVisibletask">
       <el-form :model="createGroup">
-        <el-form-item :rules="[{ required: true, message: '班级名称不能为空' }]" label="班级名称" :label-width="formLabelWidth">
+        <el-form-item :rules="[{ required: true, message: '任务名称不能为空' }]" label="任务名称" :label-width="formLabelWidth">
           <el-input v-model="createGroup.name" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item :rules="[{ required: true, message: '班级描述不能为空' }]" label="班级描述" :label-width="formLabelWidth">
+        <el-form-item :rules="[{ required: true, message: '任务描述不能为空' }]" label="任务描述" :label-width="formLabelWidth">
           <el-input v-model="createGroup.description" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item :rules="[{ required: true, message: '任务url不能为空' }]" label="任务url" :label-width="formLabelWidth">
+          <el-input v-model="createGroup.answer_video_url" autocomplete="off"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="creategroup">确 定</el-button>
+        <el-button @click="dialogFormVisibletask = false">取 消</el-button>
+        <el-button type="primary" @click="createsuccess">确 定</el-button>
       </div>
     </el-dialog>
     <el-dialog title="修改任务" :visible.sync="dialogFormVisible1">
@@ -117,11 +140,12 @@ import Vue from "vue";
 export default {
   inject: ['reload'],
   created() {
+    this.getTaskset();
     // this.getCommonTaskSet()
     console.log(this.$root.USER.id)
     Vue.axios
         .get(
-            "http://localhost:5000/task/all/1/10"
+            "http://localhost:5000/task/all/1/40"
         )
         .then((response) => {
           response = JSON.parse(response.request.responseText);
@@ -141,6 +165,7 @@ export default {
   },
   data() {
     return {
+      taslsetId: {},
       commontask: [],
       all: 10, //总页数
       cur: 1, //当前页码
@@ -152,15 +177,21 @@ export default {
       createGroup:{
         id:'',
         name:'',
+        answer_video_url: '',
         description:'',
-        teacher:''
+        teacher:'',
+        teacher_id: ''
+      },
+      Nowtaskset: {
+        name: '',
+        id: ''
       },
       taskt: true,
       tasksett: false,
       classt: false,
       usert: false,
       classes:false,
-      dialogFormVisible: false,
+      dialogFormVisibletask: false,
       dialogFormVisiblec: false,
       dialogFormVisible1: false,
       dialogTaskVisible: false,
@@ -172,16 +203,11 @@ export default {
       formLabelWidth: "120px",
       //创建任务
       createtask: {
+        id: null,
         name: "",
         type: null,
       },
-      options: [{
-        value: '0',
-        label: '个人题目集'
-      }, {
-        value: '1',
-        label: '固定题目集'
-      }],
+      options: [],
       tableData: [],
       tableData2: [],
       tableDatanew: [],
@@ -189,6 +215,75 @@ export default {
     };
   },
   methods: {
+    createsuccess(){
+      console.log(this.$root.USER.id);
+      this.$axios({
+        method: "post",
+        url: "http://localhost:5000/task/add",
+        data: {
+          name: this.createGroup.name,
+          description: this.createGroup.description,
+          answer_video_url: this.createGroup.answer_video_url,
+          teacher_id: this.$root.USER.id,
+        },
+      }).then((successResponse) => {
+        this.form.name = "";
+        this.form.description = "";
+        successResponse = JSON.parse(successResponse.request.responseText);
+        if(successResponse.code ===200){
+          this.$notify({
+            title: '成功',
+            message: '创建成功',
+            type: 'success',
+            duration: 2000
+          })
+        }else{
+          this.$notify({
+            title: '失败',
+            message: '创建失败',
+            type: 'warning',
+            duration: 2000
+          })
+        }
+        this.getgroup();
+        this.dialogFormVisibletask=false
+        this.createGroup.name='';
+        this.createGroup.id='';
+        this.createGroup.description='';
+        this.createGroup.teacher='';
+        this.createGroup.teacher_id='';
+        Vue.axios
+            .get(
+                "http://localhost:5000/task/all/1/40"
+            )
+            .then((response) => {
+              response = JSON.parse(response.request.responseText);
+              if (response.code === 200) {
+                console.log(response);
+                this.tableDatanew = response.data.tasksets;
+                console.log(this.tableData2[1].name);
+              }
+            });
+        this.taskt = true;
+        this.classt = false;
+        this.usert = false;
+        this.classes=false;
+        // console.log(successResponse);
+        this.reload()
+      });
+    },
+    getTaskset(){
+      Vue.axios
+          .get("http://localhost:5000/taskset/" + this.$root.USER.id + "/1/30")
+          .then((response) => {
+            // response = JSON.parse(response.request.responseText);
+            console.log(response);
+            if (response.data.code === 200) {
+              this.options = response.data.data.tasksets;
+              console.log(this.options);
+            }
+          });
+    },
     back() {
       this.$router.push('main')
     },
@@ -260,24 +355,59 @@ export default {
             }
           });
     },
-    getTaskSet() {
-      //在需要重新获取班级信息的地方调用
-      Vue.axios
-          .get("http://localhost:5000/taskset/" + this.$root.USER.id + "/1/5")
-          .then((response) => {
-            // response = JSON.parse(response.request.responseText);
-            console.log(response);
-            if (response.data.code === 200) {
-              this.tableData = response.data.data.tasksets;
-              console.log(this.tableData);
-            }
-          });
-    },
+    // getTaskSet() {
+    //   //在需要重新获取班级信息的地方调用
+    //   Vue.axios
+    //       .get("http://localhost:5000/taskset/" + this.$root.USER.id + "/1/5")
+    //       .then((response) => {
+    //         // response = JSON.parse(response.request.responseText);
+    //         console.log(response);
+    //         if (response.data.code === 200) {
+    //           this.tableData = response.data.data.tasksets;
+    //           console.log(this.tableData);
+    //         }
+    //       });
+    // },
     handleTaskSetClick(e) {
       this.$router.push("/taskset/" + e.id + '/' + e.name);
     },
     handleClassClick(e) {
       this.$router.push("/editgroup/" + e.id);
+    },
+    handleAdd(index,row){
+      if (this.Nowtaskset.id==''){
+        this.$message({
+          type: "warning",
+          message: "未选择任务集!",
+        });
+      }else{
+        console.log(this.Nowtaskset)
+        this.$axios({
+          method: "post",
+          url: "http://localhost:5000/task/assign2taskset/"+this.Nowtaskset.id+"/"+row.id,
+        }).then((successResponse) => {
+          successResponse = JSON.parse(successResponse.request.responseText);
+          console.log(successResponse);
+          Vue.axios
+              .get(
+                  "http://localhost:5000/task/all/1/30"
+              )
+              .then((response) => {
+                response = JSON.parse(response.request.responseText);
+                if (response.code === 200) {
+                  console.log(response);
+                  this.tableDatanew = response.data.tasksets;
+                  console.log(this.tableData2[1].name);
+                }
+              });
+        });
+        this.$message({
+          type: "success",
+          message: "添加成功!",
+        });
+      }
+
+
     },
     handleEdit(index, row) {
       this.createGroup.name = row.name;
@@ -297,7 +427,7 @@ export default {
           .then(() => {
             this.$axios({
               method: "post",
-              url: "http://localhost:5000/group/delete",
+              url: "http://localhost:5000/task/delete",
               data: {
                 id: row.id,
               },
@@ -305,6 +435,18 @@ export default {
               successResponse = JSON.parse(successResponse.request.responseText);
               console.log(successResponse);
               this.getgroup();
+              Vue.axios
+                  .get(
+                      "http://localhost:5000/task/all/1/30"
+                  )
+                  .then((response) => {
+                    response = JSON.parse(response.request.responseText);
+                    if (response.code === 200) {
+                      console.log(response);
+                      this.tableDatanew = response.data.tasksets;
+                      console.log(this.tableData2[1].name);
+                    }
+                  });
             });
             this.$message({
               type: "success",
@@ -388,39 +530,7 @@ export default {
       });
     },
     creategroup() {
-      this.dialogFormVisible = false;
-      console.log(this.$root.USER.id);
-      this.$axios({
-        method: "post",
-        url: "http://localhost:5000/group/add",
-        data: {
-          name: this.createGroup.name,
-          description: this.createGroup.description,
-          teacher_id: this.$root.USER.id,
-        },
-      }).then((successResponse) => {
-        this.form.name = "";
-        this.form.description = "";
-        successResponse = JSON.parse(successResponse.request.responseText);
-        if(successResponse.code ===200){
-          this.$notify({
-            title: '成功',
-            message: '创建成功',
-            type: 'success',
-            duration: 2000
-          })
-        }else{
-          this.$notify({
-            title: '失败',
-            message: '创建失败',
-            type: 'warning',
-            duration: 2000
-          })
-        }
-        this.getgroup();
-        // console.log(successResponse);
-        this.reload()
-      });
+      this.dialogFormVisibletask = true;
     },
     quit() {
       this.$root.USER.name = null;
