@@ -18,7 +18,7 @@
 
     <el-container>
     <el-aside width="200px">
-      <el-menu style="margin: 10px">
+      <el-menu style="margin: 10px" >
         <el-menu-item v-if="($root.USER.role==='Teacher'||$root.USER.role==='Administrator')" index="1" @click="getCommonTaskSet">
           <i class="el-icon-menu"></i>
           <span slot="title">任务集管理</span>
@@ -42,11 +42,15 @@
 
 
 		<el-main>
-      <el-button size="mini" type="primary" @click="back">返回</el-button>
-			<el-button size="mini" type="primary" @click="importstudents">一键导入学生</el-button>
-			<span>邀请码:{{this.inviteCode}}</span>
-			<el-button size="mini" type="primary" @click="outputstudents">导出学生成绩</el-button>
-      <el-button size="mini" type="primary" @click="divideTask">授权</el-button>
+      <div style="float: left">
+        <el-page-header @back="back" ></el-page-header>
+        <br>
+        <el-button @click="back">邀请码:{{this.inviteCode}}</el-button>
+        <el-button type="primary" @click="importstudents">一键导入学生</el-button>
+        <el-button type="primary" @click="outputstudents">导出学生成绩</el-button>
+        <el-button type="primary" @click="divideTask">授权</el-button>
+      </div>
+
 			<el-table :data="tableData">
 				<el-table-column prop="name" label="姓名">
 				</el-table-column>
